@@ -10,9 +10,11 @@ Add chest the terrible spec.
 
 １ページ２７スロット、１スロットにつき約４３億個収納することができるチェストを追加します。
 さらに、このＭｏｄにより追加されるアイテム「ダイヤモンドスフィア」を消費することで、１ページ分の容量を追加することが可能です。
+また、チェストの中身はエンダーチェストのように、すべてのチェスト間で共有されます。
 
 1 page 27 slots and about 4.3 billion amounts per slot.
 Use 'diamond sphere' for unlock new page.
+It shares content like an Ender Chest.
 
 ## レシピ / Recipe
 D = ダイヤモンドブロック / minecraft:diamond_block
