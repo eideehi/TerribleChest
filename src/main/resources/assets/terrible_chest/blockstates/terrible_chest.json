@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "terrible_chest:block/terrible_chest" },
+            { "model": "terrible_chest:block/terrible_chest", "y": 90 },
+            { "model": "terrible_chest:block/terrible_chest", "y": 180 },
+            { "model": "terrible_chest:block/terrible_chest", "y": 270 }
+        ]
+    }
+}

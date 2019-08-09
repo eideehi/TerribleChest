@@ -1,0 +1,16 @@
+{
+  "parent": "terrible_chest:recipes/root",
+  "rewards": {
+    "recipes": [
+      "terrible_chest:diamond_sphere"
+    ]
+  },
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "minecraft:crafting_table"
+      }
+    }
+  }
+}

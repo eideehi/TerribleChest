@@ -1,0 +1,16 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    " D ",
+    "DDD",
+    " D "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "result": {
+    "item": "terrible_chest:diamond_sphere"
+  }
+}

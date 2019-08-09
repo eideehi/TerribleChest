@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "terrible_chest:item/diamond_sphere"
+    }
+}

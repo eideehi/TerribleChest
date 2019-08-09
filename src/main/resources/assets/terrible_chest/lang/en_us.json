@@ -1,0 +1,13 @@
+{
+  "_comment": "Blocks",
+  "block.terrible_chest.terrible_chest": "Terrible Chest",
+
+  "_comment": "Items",
+  "item.terrible_chest.diamond_sphere": "Diamond Sphere",
+
+  "_comment": "Container",
+  "container.terrible_chest.terrible_chest": "Terrible Chest",
+
+  "_comment": "Gui",
+  "gui.terrible_chest.terrible_chest.count": "Count: %,d"
+}
