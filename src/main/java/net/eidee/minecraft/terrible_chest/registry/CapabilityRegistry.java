@@ -30,11 +30,11 @@ import net.eidee.minecraft.terrible_chest.capability.TerribleChestInventoryCapab
 import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID )
 public class CapabilityRegistry
@@ -50,7 +50,7 @@ public class CapabilityRegistry
     public static void attachForEntity( AttachCapabilitiesEvent< Entity > event )
     {
         Entity entity = event.getObject();
-        if ( entity instanceof PlayerEntity )
+        if ( entity instanceof EntityPlayer )
         {
             event.addCapability( TerribleChestInventoryCapability.REGISTRY_KEY,
                                  new TerribleChestInventoryCapability.Provider( Capabilities.TERRIBLE_CHEST ) );

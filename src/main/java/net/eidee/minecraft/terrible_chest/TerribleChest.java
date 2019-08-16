@@ -26,33 +26,33 @@ package net.eidee.minecraft.terrible_chest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import net.eidee.minecraft.terrible_chest.network.Networks;
-import net.eidee.minecraft.terrible_chest.registry.CapabilityRegistry;
-import net.eidee.minecraft.terrible_chest.registry.MessageRegistry;
-import net.eidee.minecraft.terrible_chest.registry.ScreenRegistry;
+import net.eidee.minecraft.terrible_chest.init.CommonProxy;
 
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod( TerribleChest.MOD_ID )
+@Mod( modid = TerribleChest.MOD_ID, version = TerribleChest.VERSION, name = TerribleChest.NAME )
 public class TerribleChest
 {
     private static final Logger logger;
 
     public static final String MOD_ID = "terrible_chest";
+    public static final String VERSION = "1.12.2-1";
+    public static final String NAME = "Terrible Chest";
+
+    @Mod.Instance( MOD_ID )
+    public static TerribleChest INSTANCE;
+
+    @SidedProxy( modId = MOD_ID,
+                 clientSide = "net.eidee.minecraft.terrible_chest.init.ClientProxy",
+                 serverSide = "net.eidee.minecraft.terrible_chest.init.CommonProxy" )
+    public static CommonProxy proxy;
 
     static
     {
         logger = LogManager.getLogger( MOD_ID );
-    }
-
-    public TerribleChest()
-    {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener( this::setup );
-        FMLJavaModLoadingContext.get().getModEventBus().addListener( this::clientSetup );
     }
 
     public static Logger logger()
@@ -60,15 +60,15 @@ public class TerribleChest
         return logger;
     }
 
-    private void setup( FMLCommonSetupEvent event )
+    @Mod.EventHandler
+    private void preInit( FMLPreInitializationEvent event )
     {
-        CapabilityRegistry.register();
-        Networks.init();
-        MessageRegistry.register();
+        proxy.preInit( event );
     }
 
-    private void clientSetup( FMLClientSetupEvent event )
+    @Mod.EventHandler
+    private void init( FMLInitializationEvent event )
     {
-        ScreenRegistry.register();
+        proxy.init( event );
     }
 }

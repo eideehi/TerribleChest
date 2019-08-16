@@ -24,8 +24,6 @@
 
 package net.eidee.minecraft.terrible_chest.tileentity;
 
-import static net.eidee.minecraft.terrible_chest.TerribleChest.MOD_ID;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,22 +36,18 @@ import net.eidee.minecraft.terrible_chest.capability.Capabilities;
 import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.ISidedInventoryProvider;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IIntArray;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -63,8 +57,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 @ParametersAreNonnullByDefault
 public class TerribleChestTileEntity
     extends TileEntity
-    implements INamedContainerProvider,
-               ITickableTileEntity
+    implements ITickable
 {
     public static final int DATA_PAGE = 27;
     public static final int DATA_MAX_PAGE = 28;
@@ -72,93 +65,16 @@ public class TerribleChestTileEntity
 
     private UUID ownerId;
     private int page;
-    private IIntArray data;
-    private Inventory inventory;
     /**
      * GUIでのスロット入れ替えに使う。NBT保存対象外
      */
     private int swapTarget = -1;
 
-    {
-        data = new IIntArray()
-        {
-            @Override
-            public int get( int index )
-            {
-                if ( index >= 0 && index < 27 )
-                {
-                    return inventory != null ? inventory.getItemCount( index ) : 0;
-                }
-                else if ( index == DATA_PAGE )
-                {
-                    return page;
-                }
-                else if ( index == DATA_MAX_PAGE )
-                {
-                    return inventory != null ? inventory.getMaxPage() : 0;
-                }
-                else if ( index == DATA_SWAP_TARGET )
-                {
-                    return swapTarget;
-                }
-                return 0;
-            }
-
-            @Override
-            public void set( int index, int value )
-            {
-                if ( index >= 0 && index < 27 )
-                {
-                    if ( inventory != null )
-                    {
-                        inventory.setItemCount( index, value );
-                    }
-                }
-                else if ( index == DATA_PAGE )
-                {
-                    page = value;
-                    swapTarget = -1;
-                }
-                else if ( index == DATA_MAX_PAGE && inventory != null )
-                {
-                    inventory.setMaxPage( value );
-                }
-                else if ( index == DATA_SWAP_TARGET && inventory != null )
-                {
-                    if ( value > 0x10000 )
-                    {
-                        int _value = value - 0x10000;
-                        int index1 = _value >> 8;
-                        int index2 = _value & 0xFF;
-                        inventory.swap( index1, index2 );
-                        swapTarget = -1;
-                    }
-                    else
-                    {
-                        swapTarget = Math.max( value, -1 );
-                    }
-                }
-            }
-
-            @Override
-            public int size()
-            {
-                return 30;
-            }
-        };
-    }
-
-    public TerribleChestTileEntity()
-    {
-        super( TileEntityTypes.TERRIBLE_CHEST );
-    }
-
-
     private static List< TileEntity > getAllNeighborInventoryTileEntity( World world, BlockPos pos )
     {
         List< TileEntity > list = Lists.newArrayList();
-        final Direction[] directions = { Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST };
-        for ( Direction direction : directions )
+        final EnumFacing[] directions = { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+        for ( EnumFacing direction : directions )
         {
             TileEntity tileEntity = world.getTileEntity( pos.offset( direction ) );
             if ( tileEntity instanceof IInventory )
@@ -169,10 +85,14 @@ public class TerribleChestTileEntity
         return list;
     }
 
-    private static Iterable< IItemHandler > getItemHandler( TileEntity tileEntity, Direction side )
+    private static Iterable< IItemHandler > getItemHandler( TileEntity tileEntity, EnumFacing side )
     {
         List< IItemHandler > list = Lists.newArrayListWithCapacity( 1 );
-        tileEntity.getCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side ).ifPresent( list::add );
+        IItemHandler capability = tileEntity.getCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side );
+        if ( capability != null )
+        {
+            list.add( capability );
+        }
         return list;
     }
 
@@ -180,14 +100,7 @@ public class TerribleChestTileEntity
     private static ISidedInventory getSidedInventory( TileEntity tileEntity )
     {
         ISidedInventory sidedInventory = null;
-        if ( tileEntity instanceof ISidedInventoryProvider )
-        {
-            ISidedInventoryProvider sidedInventoryProvider = ( ISidedInventoryProvider )tileEntity;
-            sidedInventory = sidedInventoryProvider.createInventory( tileEntity.getBlockState(),
-                                                                     Objects.requireNonNull( tileEntity.getWorld() ),
-                                                                     tileEntity.getPos() );
-        }
-        else if ( tileEntity instanceof ISidedInventory )
+        if ( tileEntity instanceof ISidedInventory )
         {
             sidedInventory = ( ISidedInventory )tileEntity;
         }
@@ -195,7 +108,7 @@ public class TerribleChestTileEntity
     }
 
     private static boolean canInsertItem( TileEntity tileEntity,
-                                          Direction side,
+                                          EnumFacing side,
                                           ItemStack stackInSlot,
                                           ItemStack insertStack )
     {
@@ -215,7 +128,7 @@ public class TerribleChestTileEntity
     }
 
     private static boolean canExtractItem( TileEntity tileEntity,
-                                           Direction side,
+                                           EnumFacing side,
                                            ItemStack stackInSlot )
     {
         ISidedInventory sidedInventory = getSidedInventory( tileEntity );
@@ -233,7 +146,7 @@ public class TerribleChestTileEntity
         return true;
     }
 
-    private boolean isUsableByPlayer( PlayerEntity player )
+    private boolean isUsableByPlayer( EntityPlayer player )
     {
         World world = Objects.requireNonNull( getWorld() );
         BlockPos pos = getPos();
@@ -243,18 +156,6 @@ public class TerribleChestTileEntity
             return false;
         }
         return player.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5 ) <= 64.0;
-    }
-
-    private void setupInventory( PlayerEntity player )
-    {
-        this.inventory = null;
-        player.getCapability( Capabilities.TERRIBLE_CHEST )
-              .ifPresent( terribleChest -> this.inventory = new Inventory( this, terribleChest ) );
-    }
-
-    private void resetInventory()
-    {
-        this.inventory = null;
     }
 
     private void itemDeliver( World world, TerribleChestInventory inventory )
@@ -269,8 +170,8 @@ public class TerribleChestTileEntity
             }
             for ( TileEntity tileEntity : getAllNeighborInventoryTileEntity( world, getPos() ) )
             {
-                final Direction[] sides = { Direction.UP, Direction.NORTH };
-                for ( Direction side : sides )
+                final EnumFacing[] sides = { EnumFacing.UP, EnumFacing.NORTH };
+                for ( EnumFacing side : sides )
                 {
                     for ( IItemHandler itemHandler : getItemHandler( tileEntity, side ) )
                     {
@@ -300,7 +201,7 @@ public class TerribleChestTileEntity
         Inventory _inventory = new Inventory( this, inventory );
         for ( TileEntity tileEntity : getAllNeighborInventoryTileEntity( world, getPos() ) )
         {
-            final Direction side = Direction.DOWN;
+            final EnumFacing side = EnumFacing.DOWN;
             for ( IItemHandler itemHandler : getItemHandler( tileEntity, side ) )
             {
                 for ( int i = 0; i < itemHandler.getSlots(); i++ )
@@ -334,67 +235,70 @@ public class TerribleChestTileEntity
         this.ownerId = ownerId;
     }
 
-    public boolean isOwner( PlayerEntity player )
+    public boolean isOwner( EntityPlayer player )
     {
         return Objects.equals( ownerId, player.getUniqueID() );
+    }
+
+    @Nullable
+    public TerribleChestContainer createContainer( InventoryPlayer inventoryPlayer )
+    {
+        TerribleChestInventory capability = inventoryPlayer.player.getCapability( Capabilities.TERRIBLE_CHEST, null );
+        if ( capability != null )
+        {
+            return new TerribleChestContainer( inventoryPlayer, new Inventory( this, capability ) );
+        }
+        return null;
     }
 
     @Override
     public ITextComponent getDisplayName()
     {
-        return new TranslationTextComponent( "container." + MOD_ID + ".terrible_chest" );
-    }
-
-    @Nullable
-    @Override
-    public Container createMenu( int id, PlayerInventory playerInventory, PlayerEntity player )
-    {
-        setupInventory( player );
-        return new TerribleChestContainer( id, playerInventory, inventory, data );
+        return new TextComponentTranslation( "container.terrible_chest.terrible_chest" );
     }
 
     @Override
-    public void tick()
+    public void update()
     {
         World world = Objects.requireNonNull( getWorld() );
-        if ( !world.isRemote() && ownerId != null )
+        if ( !world.isRemote && ownerId != null )
         {
-            PlayerEntity owner = world.getPlayerByUuid( ownerId );
+            EntityPlayer owner = world.getPlayerEntityByUUID( ownerId );
             if ( owner != null )
             {
-                boolean isBlockPowered = world.isBlockPowered( getPos() );
-                owner.getCapability( Capabilities.TERRIBLE_CHEST )
-                     .ifPresent( inventory -> {
-                         if ( isBlockPowered )
-                         {
-                             itemDeliver( world, inventory );
-                         }
-                         else
-                         {
-                             itemCollection( world, inventory );
-                         }
-                     } );
+                TerribleChestInventory inventory = owner.getCapability( Capabilities.TERRIBLE_CHEST, null );
+                if ( inventory != null )
+                {
+                    if ( world.isBlockPowered( getPos() ) )
+                    {
+                        itemDeliver( world, inventory );
+                    }
+                    else
+                    {
+                        itemCollection( world, inventory );
+                    }
+                }
             }
         }
     }
 
     @Override
-    public void read( CompoundNBT compound )
+    public void readFromNBT( NBTTagCompound compound )
     {
-        super.read( compound );
+        super.readFromNBT( compound );
         ownerId = compound.getUniqueId( "OwnerId" );
-        page = compound.getInt( "Page" );
+        page = compound.getInteger( "Page" );
     }
 
     @Override
-    public CompoundNBT write( CompoundNBT compound )
+    public NBTTagCompound writeToNBT( NBTTagCompound compound )
     {
-        super.write( compound );
+        super.writeToNBT( compound );
         if ( ownerId != null )
         {
-            compound.putUniqueId( "OwnerId", ownerId );
+            compound.setUniqueId( "OwnerId", ownerId );
         }
-        compound.putInt( "Page", page );
+        compound.setInteger( "Page", page );
         return compound;
     }
 
@@ -415,25 +319,14 @@ public class TerribleChestTileEntity
             return tileEntity.page * 27;
         }
 
-
         private int getItemCount( int index )
         {
             return inventory.getItemCount( getOffset() + index );
         }
 
-        private int getMaxPage()
-        {
-            return inventory.getMaxPage();
-        }
-
         private void setItemCount( int index, int count )
         {
             inventory.setItemCount( getOffset() + index, count );
-        }
-
-        private void setMaxPage( int maxPage )
-        {
-            inventory.setMaxPage( maxPage );
         }
 
         private void swap( int index1, int index2 )
@@ -493,7 +386,7 @@ public class TerribleChestTileEntity
         }
 
         @Override
-        public boolean isUsableByPlayer( PlayerEntity player )
+        public boolean isUsableByPlayer( EntityPlayer player )
         {
             return tileEntity.isUsableByPlayer( player );
         }
@@ -509,9 +402,104 @@ public class TerribleChestTileEntity
         }
 
         @Override
-        public void closeInventory( PlayerEntity player )
+        public void openInventory( EntityPlayer player )
         {
-            tileEntity.resetInventory();
+        }
+
+        @Override
+        public void closeInventory( EntityPlayer player )
+        {
+        }
+
+        @Override
+        public int getInventoryStackLimit()
+        {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public boolean isItemValidForSlot( int index, ItemStack stack )
+        {
+            return true;
+        }
+
+        @Override
+        public int getField( int index )
+        {
+            if ( index >= 0 && index < 27 )
+            {
+                return getItemCount( index );
+            }
+            else if ( index == DATA_PAGE )
+            {
+                return tileEntity.page;
+            }
+            else if ( index == DATA_MAX_PAGE )
+            {
+                return inventory.getMaxPage();
+            }
+            else if ( index == DATA_SWAP_TARGET )
+            {
+                return tileEntity.swapTarget;
+            }
+            return 0;
+        }
+
+        @Override
+        public void setField( int index, int value )
+        {
+            if ( index >= 0 && index < 27 )
+            {
+                setItemCount( index, value );
+            }
+            else if ( index == DATA_PAGE )
+            {
+                tileEntity.page = value;
+                tileEntity.swapTarget = -1;
+            }
+            else if ( index == DATA_MAX_PAGE )
+            {
+                inventory.setMaxPage( value );
+            }
+            else if ( index == DATA_SWAP_TARGET )
+            {
+                if ( value > 0x10000 )
+                {
+                    int _value = value - 0x10000;
+                    int index1 = _value >> 8;
+                    int index2 = _value & 0xFF;
+                    swap( index1, index2 );
+                    tileEntity.swapTarget = -1;
+                }
+                else
+                {
+                    tileEntity.swapTarget = Math.max( value, -1 );
+                }
+            }
+        }
+
+        @Override
+        public int getFieldCount()
+        {
+            return 30;
+        }
+
+        @Override
+        public String getName()
+        {
+            return "container.terrible_chest.terrible_chest";
+        }
+
+        @Override
+        public boolean hasCustomName()
+        {
+            return false;
+        }
+
+        @Override
+        public ITextComponent getDisplayName()
+        {
+            return new TextComponentTranslation( getName() );
         }
     }
 }

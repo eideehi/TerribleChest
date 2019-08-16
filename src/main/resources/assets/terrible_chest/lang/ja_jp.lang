@@ -1,0 +1,4 @@
+tile.terrible_chest.terrible_chest.name=テリブルチェスト
+item.terrible_chest.diamond_sphere.name=ダイヤモンドスフィア
+container.terrible_chest.terrible_chest=テリブルチェスト
+gui.terrible_chest.terrible_chest.count=個数: %,d

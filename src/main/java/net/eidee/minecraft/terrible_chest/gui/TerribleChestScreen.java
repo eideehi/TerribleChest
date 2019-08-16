@@ -27,33 +27,34 @@ package net.eidee.minecraft.terrible_chest.gui;
 import static net.eidee.minecraft.terrible_chest.TerribleChest.MOD_ID;
 
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 import net.eidee.minecraft.terrible_chest.network.Networks;
 import net.eidee.minecraft.terrible_chest.network.message.gui.ChangePage;
 import net.eidee.minecraft.terrible_chest.network.message.gui.UnlockMaxPage;
+import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiButtonImage;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@OnlyIn( Dist.CLIENT )
+@SideOnly( Side.CLIENT )
 public class TerribleChestScreen
-    extends ContainerScreen< TerribleChestContainer >
+    extends GuiContainer
 {
     private static final ResourceLocation GUI_TEXTURE;
 
@@ -62,44 +63,51 @@ public class TerribleChestScreen
         GUI_TEXTURE = new ResourceLocation( MOD_ID, "textures/gui/container/terrible_chest.png" );
     }
 
+    private IInventory inventory;
+    private InventoryPlayer playerInventory;
+
     public TerribleChestScreen( TerribleChestContainer screenContainer,
-                                PlayerInventory inv,
-                                ITextComponent titleIn )
+                                InventoryPlayer playerInventory )
     {
-        super( screenContainer, inv, titleIn );
+        super( screenContainer );
+        this.inventory = screenContainer.getChestInventory();
+        this.playerInventory = playerInventory;
         xSize = 209;
         ySize = 182;
     }
 
     @Override
-    protected void init()
+    protected void actionPerformed( GuiButton button )
     {
-        super.init();
-        addButton( new ImageButton( guiLeft + 138, guiTop + 5, 7, 11, 7, 182, 11, GUI_TEXTURE, button -> {
-            int page = container.getPage();
-            Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( page - 1 ) );
-        } ) );
-        addButton( new ImageButton( guiLeft + 161, guiTop + 5, 7, 11, 0, 182, 11, GUI_TEXTURE, button -> {
-            int page = container.getPage();
-            Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( page + 1 ) );
-        } ) );
-        addButton( new ImageButton( guiLeft + 181, guiTop + 8, 20, 20, 14, 182, 20, GUI_TEXTURE, button -> {
-            Networks.TERRIBLE_CHEST.sendToServer( new UnlockMaxPage() );
-        } ) );
+        int page;
+        switch ( button.id )
+        {
+            default:
+                break;
+
+            case 0:
+                page = inventory.getField( TerribleChestTileEntity.DATA_PAGE );
+                Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( page - 1 ) );
+                break;
+
+            case 1:
+                page = inventory.getField( TerribleChestTileEntity.DATA_PAGE );
+                Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( page + 1 ) );
+                break;
+
+            case 2:
+                Networks.TERRIBLE_CHEST.sendToServer( new UnlockMaxPage() );
+                break;
+        }
     }
 
     @Override
-    public boolean keyPressed( int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_ )
+    public void initGui()
     {
-        /*
-        if ( p_keyPressed_1_ == GLFW.GLFW_KEY_LEFT_ALT ||
-             p_keyPressed_1_ == GLFW.GLFW_KEY_RIGHT_ALT )
-        {
-            handleMouseClick( hoveredSlot, hoveredSlot.slotNumber, 0, ClickType.PICKUP_ALL );
-            return true;
-        }
-        */
-        return super.keyPressed( p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_ );
+        super.initGui();
+        addButton( new GuiButtonImage( 0, guiLeft + 138, guiTop + 5, 7, 11, 7, 182, 11, GUI_TEXTURE ) );
+        addButton( new GuiButtonImage( 1, guiLeft + 161, guiTop + 5, 7, 11, 0, 182, 11, GUI_TEXTURE ) );
+        addButton( new GuiButtonImage( 2, guiLeft + 181, guiTop + 8, 20, 20, 14, 182, 20, GUI_TEXTURE ) );
     }
 
     @Override
@@ -109,12 +117,12 @@ public class TerribleChestScreen
         {
             if ( slotId >= 0 && slotId < 27 )
             {
-                if ( hasAltDown() )
+                if ( isAltKeyDown() )
                 {
                     super.handleMouseClick( slotIn, slotId, 2, type );
                     return;
                 }
-                else if ( hasControlDown() )
+                else if ( isCtrlKeyDown() )
                 {
                     super.handleMouseClick( slotIn, slotId, 3, type );
                     return;
@@ -122,7 +130,7 @@ public class TerribleChestScreen
             }
             else if ( slotId >= 27 && slotId < 63 )
             {
-                if ( hasControlDown() )
+                if ( isCtrlKeyDown() )
                 {
                     super.handleMouseClick( slotIn, slotId, 3, type );
                     return;
@@ -133,7 +141,7 @@ public class TerribleChestScreen
         {
             if ( slotId >= 0 && slotId < 63 )
             {
-                if ( hasControlDown() )
+                if ( isCtrlKeyDown() )
                 {
                     super.handleMouseClick( slotIn, slotId, 2, type );
                     return;
@@ -144,59 +152,68 @@ public class TerribleChestScreen
     }
 
     @Override
-    public void render( int p_render_1_, int p_render_2_, float p_render_3_ )
+    public void drawScreen( int mouseX, int mouseY, float partialTicks )
     {
-        this.renderBackground();
-        super.render( p_render_1_, p_render_2_, p_render_3_ );
-        this.renderHoveredToolTip( p_render_1_, p_render_2_ );
+        this.drawDefaultBackground();
+        super.drawScreen( mouseX, mouseY, partialTicks );
+        this.renderHoveredToolTip( mouseX, mouseY );
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer( int mouseX, int mouseY )
     {
-        font.drawString( getTitle().getFormattedText(), 8.0F, 22.0F, 4210752 );
-        font.drawString( playerInventory.getDisplayName().getFormattedText(), 8.0F, ySize - 93F, 4210752 );
+        fontRenderer.drawString( "", 8, 22, 4210752 );
+        fontRenderer.drawString( playerInventory.getDisplayName().getFormattedText(), 8, ySize - 93, 4210752 );
 
-        String page = ( container.getPage() + 1 ) + " / ";
-        int pageWidth = font.getStringWidth( page );
-        String maxPage = Integer.toString( container.getMaxPage() );
-        int maxPageWidth = font.getStringWidth( maxPage );
-        font.drawString( page, 166 - maxPageWidth - pageWidth, 22.0F, 4210752 );
-        font.drawString( maxPage, 166 - maxPageWidth, 22.0F, 4210752 );
+        String page = ( inventory.getField( TerribleChestTileEntity.DATA_PAGE ) + 1 ) + " / ";
+        int pageWidth = fontRenderer.getStringWidth( page );
+        String maxPage = Integer.toString( inventory.getField( TerribleChestTileEntity.DATA_MAX_PAGE ) );
+        int maxPageWidth = fontRenderer.getStringWidth( maxPage );
+        fontRenderer.drawString( page, 166 - maxPageWidth - pageWidth, 22, 4210752 );
+        fontRenderer.drawString( maxPage, 166 - maxPageWidth, 22, 4210752 );
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer( float partialTicks, int mouseX, int mouseY )
     {
-        GlStateManager.color4f( 1.0F, 1.0F, 1.0F, 1.0F );
-        Objects.requireNonNull( minecraft ).getTextureManager().bindTexture( GUI_TEXTURE );
-        blit( guiLeft, guiTop, 0, 0, xSize, ySize );
+        GlStateManager.color( 1.0F, 1.0F, 1.0F, 1.0F );
+        mc.getTextureManager().bindTexture( GUI_TEXTURE );
+        drawTexturedModalRect( guiLeft, guiTop, 0, 0, xSize, ySize );
 
-        int swapTarget = container.getSwapTarget();
+        int swapTarget = inventory.getField( TerribleChestTileEntity.DATA_SWAP_TARGET );
         if ( swapTarget >= 0 && swapTarget < 27 )
         {
-            Slot slot = container.getSlot( swapTarget );
+            Slot slot = inventorySlots.getSlot( swapTarget );
             GlStateManager.disableLighting();
-            GlStateManager.disableDepthTest();
+            GlStateManager.disableDepth();
             int x = guiLeft + slot.xPos;
             int y = guiTop + slot.yPos;
             GlStateManager.colorMask( true, true, true, false );
-            fillGradient( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
+            drawGradientRect( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
             GlStateManager.colorMask( true, true, true, true );
             GlStateManager.enableLighting();
-            GlStateManager.enableDepthTest();
+            GlStateManager.enableDepth();
         }
     }
 
     @Override
-    public void renderTooltip( List< String > textLines, int x, int y, FontRenderer font )
+    protected void renderHoveredToolTip( int p_191948_1_, int p_191948_2_ )
+    {
+        super.renderHoveredToolTip( p_191948_1_, p_191948_2_ );
+    }
+
+    @Override
+    protected void drawHoveringText( List< String > textLines, int x, int y, FontRenderer font )
     {
         Slot slot = getSlotUnderMouse();
-        if ( slot != null && Objects.equals( slot.inventory, container.getChestInventory() ) )
+        if ( slot != null )
         {
-            long count = container.getItemCount( slot.getSlotIndex() ) & 0xFFFFFFFFL;
-            textLines.add( 1, I18n.format( "gui." + MOD_ID + ".terrible_chest.count", count ) );
+            if ( slot.slotNumber >= 0 && slot.slotNumber < 27 )
+            {
+                long count = inventory.getField( slot.getSlotIndex() ) & 0xFFFFFFFFL;
+                textLines.add( 1, I18n.format( "gui." + MOD_ID + ".terrible_chest.count", count ) );
+            }
         }
-        super.renderTooltip( textLines, x, y, font );
+        super.drawHoveringText( textLines, x, y, font );
     }
 }

@@ -31,11 +31,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.util.IntUtil;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -44,7 +46,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 @ParametersAreNonnullByDefault
 public class TerribleChestInventory
     implements IInventory,
-               INBTSerializable< CompoundNBT >
+               INBTSerializable< NBTTagCompound >
 {
     private int maxPage;
     private Int2ObjectMap< Item > items;
@@ -189,7 +191,7 @@ public class TerribleChestInventory
     }
 
     @Override
-    public boolean isUsableByPlayer( PlayerEntity player )
+    public boolean isUsableByPlayer( EntityPlayer player )
     {
         return true;
     }
@@ -201,47 +203,104 @@ public class TerribleChestInventory
     }
 
     @Override
-    public CompoundNBT serializeNBT()
+    public NBTTagCompound serializeNBT()
     {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putInt( "MaxPage", maxPage );
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setInteger( "MaxPage", maxPage );
 
-        ListNBT list = new ListNBT();
+        NBTTagList list = new NBTTagList();
         for ( Int2ObjectMap.Entry< Item > entry : items.int2ObjectEntrySet() )
         {
             Item item = entry.getValue();
             if ( item.isNotEmpty() )
             {
-                CompoundNBT compound = new CompoundNBT();
-                compound.putInt( "Index", entry.getIntKey() );
-                compound.put( "Stack", item.getStack().serializeNBT() );
-                compound.putInt( "Count", item.getCount() );
-                list.add( compound );
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setInteger( "Index", entry.getIntKey() );
+                compound.setTag( "Stack", item.getStack().serializeNBT() );
+                compound.setInteger( "Count", item.getCount() );
+                list.appendTag( compound );
             }
         }
-        nbt.put( "Items", list );
+        nbt.setTag( "Items", list );
 
         return nbt;
     }
 
     @Override
-    public void deserializeNBT( CompoundNBT nbt )
+    public void deserializeNBT( NBTTagCompound nbt )
     {
-        maxPage = nbt.getInt( "MaxPage" );
+        maxPage = nbt.getInteger( "MaxPage" );
 
-        ListNBT list = nbt.getList( "Items", Constants.NBT.TAG_COMPOUND );
+        NBTTagList list = nbt.getTagList( "Items", Constants.NBT.TAG_COMPOUND );
         items.clear();
-        for ( int i = 0; i < list.size(); i++ )
+        for ( int i = 0; i < list.tagCount(); i++ )
         {
-            CompoundNBT compound = list.getCompound( i );
-            int index = compound.getInt( "Index" );
+            NBTTagCompound compound = list.getCompoundTagAt( i );
+            int index = compound.getInteger( "Index" );
             if ( isValidIndex( index ) )
             {
-                ItemStack stack = ItemStack.read( compound.getCompound( "Stack" ) );
-                int count = compound.getInt( "Count" );
+                ItemStack stack = new ItemStack( compound.getCompoundTag( "Stack" ) );
+                int count = compound.getInteger( "Count" );
                 items.put( index, new Item( stack, count ) );
             }
         }
+    }
+
+    @Override
+    public int getInventoryStackLimit()
+    {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public void openInventory( EntityPlayer player )
+    {
+    }
+
+    @Override
+    public void closeInventory( EntityPlayer player )
+    {
+    }
+
+    @Override
+    public boolean isItemValidForSlot( int index, ItemStack stack )
+    {
+        return true;
+    }
+
+    @Override
+    public int getField( int id )
+    {
+        return 0;
+    }
+
+    @Override
+    public void setField( int id, int value )
+    {
+    }
+
+    @Override
+    public int getFieldCount()
+    {
+        return 0;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "container.terrible_chest.terrible_chest";
+    }
+
+    @Override
+    public boolean hasCustomName()
+    {
+        return false;
+    }
+
+    @Override
+    public ITextComponent getDisplayName()
+    {
+        return new TextComponentTranslation( getName() );
     }
 
     public static final class Item

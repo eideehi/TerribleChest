@@ -36,19 +36,18 @@ import net.eidee.minecraft.terrible_chest.item.Items;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 import net.eidee.minecraft.terrible_chest.util.IntUtil;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIntArray;
-import net.minecraft.util.IntArray;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 @MethodsReturnNonnullByDefault
@@ -57,31 +56,27 @@ public class TerribleChestContainer
     extends Container
 {
     private IInventory inventory;
-    private IIntArray data;
     private IInventory unlockInventory;
+    private int[] data;
 
-    public TerribleChestContainer( int id, PlayerInventory playerInventory )
+    public TerribleChestContainer( InventoryPlayer InventoryPlayer )
     {
-        this( id, playerInventory, new Inventory( 27 ), new IntArray( 30 ) );
+        this( InventoryPlayer, new DummyInventory() );
     }
 
-    public TerribleChestContainer( int id, PlayerInventory playerInventory, IInventory inventory, IIntArray intArray )
+    public TerribleChestContainer( InventoryPlayer InventoryPlayer, IInventory inventory )
     {
-        super( ContainerTypes.TERRIBLE_CHEST, id );
         this.inventory = inventory;
-        this.data = intArray;
-        this.unlockInventory = new Inventory( 1 );
+        this.unlockInventory = new InventoryBasic( "", false, 1 );
+        this.data = new int[ this.inventory.getFieldCount() ];
 
-        assertInventorySize( this.inventory, 27 );
-        assertIntArraySize( this.data, 30 );
-
-        this.inventory.openInventory( playerInventory.player );
+        this.inventory.openInventory( InventoryPlayer.player );
 
         for ( int i = 0; i < 3; ++i )
         {
             for ( int j = 0; j < 9; ++j )
             {
-                addSlot( new Slot( this.inventory, j + i * 9, 8 + j * 18, 34 + i * 18 ) );
+                addSlotToContainer( new Slot( this.inventory, j + i * 9, 8 + j * 18, 34 + i * 18 ) );
             }
         }
 
@@ -89,25 +84,23 @@ public class TerribleChestContainer
         {
             for ( int j = 0; j < 9; ++j )
             {
-                addSlot( new Slot( playerInventory, j + i * 9 + 9, 8 + j * 18, 100 + i * 18 ) );
+                addSlotToContainer( new Slot( InventoryPlayer, j + i * 9 + 9, 8 + j * 18, 100 + i * 18 ) );
             }
         }
 
         for ( int i = 0; i < 9; ++i )
         {
-            addSlot( new Slot( playerInventory, i, 8 + i * 18, 158 ) );
+            addSlotToContainer( new Slot( InventoryPlayer, i, 8 + i * 18, 158 ) );
         }
 
-        addSlot( new Slot( unlockInventory, 0, 183, 35 ) );
-
-        trackIntArray( this.data );
+        addSlotToContainer( new Slot( unlockInventory, 0, 183, 35 ) );
     }
 
     public void setPage( int page )
     {
-        int maxPage = data.get( TerribleChestTileEntity.DATA_MAX_PAGE );
+        int maxPage = inventory.getField( TerribleChestTileEntity.DATA_MAX_PAGE );
         int _page = MathHelper.clamp( page, 0, maxPage - 1 );
-        data.set( TerribleChestTileEntity.DATA_PAGE, _page );
+        inventory.setField( TerribleChestTileEntity.DATA_PAGE, _page );
     }
 
     public void unlockMaxPage()
@@ -116,49 +109,61 @@ public class TerribleChestContainer
         if ( !stack.isEmpty() && stack.getItem() == Items.DIAMOND_SPHERE )
         {
             stack.shrink( 1 );
-            int maxPage = data.get( TerribleChestTileEntity.DATA_MAX_PAGE );
-            data.set( TerribleChestTileEntity.DATA_MAX_PAGE, maxPage + 1 );
+            int maxPage = inventory.getField( TerribleChestTileEntity.DATA_MAX_PAGE );
+            inventory.setField( TerribleChestTileEntity.DATA_MAX_PAGE, maxPage + 1 );
         }
     }
 
-    @OnlyIn( Dist.CLIENT )
+    @SideOnly( Side.CLIENT )
     public IInventory getChestInventory()
     {
-        return inventory;
-    }
-
-    @OnlyIn( Dist.CLIENT )
-    public int getItemCount( int index )
-    {
-        return data.get( index );
-    }
-
-    @OnlyIn( Dist.CLIENT )
-    public int getPage()
-    {
-        return data.get( TerribleChestTileEntity.DATA_PAGE );
-    }
-
-    @OnlyIn( Dist.CLIENT )
-    public int getMaxPage()
-    {
-        return data.get( TerribleChestTileEntity.DATA_MAX_PAGE );
-    }
-
-    @OnlyIn( Dist.CLIENT )
-    public int getSwapTarget()
-    {
-        return data.get( TerribleChestTileEntity.DATA_SWAP_TARGET );
+        return this.inventory;
     }
 
     @Override
-    public boolean canInteractWith( PlayerEntity playerIn )
+    public void addListener( IContainerListener listener )
+    {
+        super.addListener( listener );
+        listener.sendAllWindowProperties( this, inventory );
+    }
+
+    @Override
+    public void detectAndSendChanges()
+    {
+        super.detectAndSendChanges();
+
+        for ( int i = 0; i < data.length; i++ )
+        {
+            int value = inventory.getField( i );
+            if ( data[ i ] != value )
+            {
+                for ( IContainerListener listener : listeners )
+                {
+                    listener.sendWindowProperty( this, i, value );
+                    data[ i ] = value;
+                }
+            }
+        }
+    }
+
+    @SideOnly( Side.CLIENT )
+    @Override
+    public void updateProgressBar( int id, int data )
+    {
+        if ( id >= 0 && id <= 30 )
+        {
+            inventory.setField( id, data );
+        }
+    }
+
+    @Override
+    public boolean canInteractWith( EntityPlayer playerIn )
     {
         return inventory.isUsableByPlayer( playerIn );
     }
 
     @Override
-    public void onContainerClosed( PlayerEntity playerIn )
+    public void onContainerClosed( EntityPlayer playerIn )
     {
         super.onContainerClosed( playerIn );
         inventory.closeInventory( playerIn );
@@ -218,12 +223,12 @@ public class TerribleChestContainer
             {
                 if ( index < 27 )
                 {
-                    int count = data.get( index );
+                    int count = inventory.getField( index );
                     int limit = -1 - count;
                     if ( limit != 0 )
                     {
                         int size = IntUtil.minUnsigned( stack.getCount(), limit );
-                        data.set( index, count + size );
+                        inventory.setField( index, count + size );
                         stack.shrink( size );
                         slot.onSlotChanged();
                         result = true;
@@ -255,7 +260,7 @@ public class TerribleChestContainer
                 if ( emptySlot < 27 )
                 {
                     slot.putStack( ItemHandlerHelper.copyStackWithSize( stack, 1 ) );
-                    data.set( emptySlot, stack.getCount() );
+                    inventory.setField( emptySlot, stack.getCount() );
                     stack.setCount( 0 );
                     result = true;
                 }
@@ -276,7 +281,7 @@ public class TerribleChestContainer
     }
 
     @Override
-    public ItemStack transferStackInSlot( PlayerEntity playerIn, int index )
+    public ItemStack transferStackInSlot( EntityPlayer playerIn, int index )
     {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = inventorySlots.get( index );
@@ -287,7 +292,7 @@ public class TerribleChestContainer
             if ( index < 27 )
             {
                 ItemStack copy = stackInSlot.copy();
-                int count = data.get( index );
+                int count = inventory.getField( index );
                 int size = IntUtil.minUnsigned( count, stackInSlot.getMaxStackSize() );
                 copy.setCount( size );
                 if ( !mergeItemStack( copy, 27, 63, true ) )
@@ -295,7 +300,7 @@ public class TerribleChestContainer
                     return ItemStack.EMPTY;
                 }
                 int newCount = count - ( size - copy.getCount() );
-                data.set( index, newCount );
+                inventory.setField( index, newCount );
                 if ( newCount == 0 )
                 {
                     stackInSlot.setCount( 0 );
@@ -321,22 +326,22 @@ public class TerribleChestContainer
 
     @SuppressWarnings( { "StatementWithEmptyBody", "UnnecessarySemicolon" } )
     @Override
-    public ItemStack slotClick( int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player )
+    public ItemStack slotClick( int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player )
     {
         // logger().debug( "slotId={}, click={}, drag={}", slotId, clickTypeIn, dragType );
         if ( slotId >= 0 && slotId < 27 )
         { // チェストのスロットがクリックされた
-            PlayerInventory playerInventory = player.inventory;
+            InventoryPlayer InventoryPlayer = player.inventory;
             if ( clickTypeIn == ClickType.PICKUP )
             { // 通常のクリック処理＋独自イベント処理
 
                 int _dragType = dragType;
-                if ( data.get( TerribleChestTileEntity.DATA_SWAP_TARGET ) != -1 )
+                if ( inventory.getField( TerribleChestTileEntity.DATA_SWAP_TARGET ) != -1 )
                 { // 入れ替え対象スロットを選択済みの場合、スロット入れ替え処理を優先する
                     _dragType = 2;
                 }
 
-                ItemStack stack = playerInventory.getItemStack().copy();
+                ItemStack stack = InventoryPlayer.getItemStack().copy();
                 Slot slot = getSlot( slotId );
                 ItemStack stackInSlot = slot.getStack();
 
@@ -348,7 +353,7 @@ public class TerribleChestContainer
                         { // 対象スロットが空ではない
                             // 最大スタック数か在庫数を手持ちに移動
                             ItemStack result = slot.decrStackSize( stackInSlot.getMaxStackSize() );
-                            playerInventory.setItemStack( result );
+                            InventoryPlayer.setItemStack( result );
                             return result;
                         }
                     }
@@ -360,8 +365,8 @@ public class TerribleChestContainer
                             int count = stack.getCount();
                             stack.setCount( 1 );
                             slot.putStack( stack );
-                            data.set( slotId, count );
-                            playerInventory.setItemStack( ItemStack.EMPTY );
+                            inventory.setField( slotId, count );
+                            InventoryPlayer.setItemStack( ItemStack.EMPTY );
                         }
                         else
                         { // 対象スロットが空ではない
@@ -369,7 +374,7 @@ public class TerribleChestContainer
                             { // 対象スロットのアイテムと手持ちのアイテムがマージ可能
                                 if ( mergeItemStack( stack, slotId, slotId + 1, false ) )
                                 {
-                                    playerInventory.setItemStack( stack );
+                                    InventoryPlayer.setItemStack( stack );
                                     return stack;
                                 }
                             }
@@ -383,10 +388,10 @@ public class TerribleChestContainer
                         if ( !stackInSlot.isEmpty() )
                         { // 対象スロットが空
                             // 最大スタック数か在庫数の半分を手持ちに移動
-                            int count = data.get( slotId );
+                            int count = inventory.getField( slotId );
                             int amount = IntUtil.minUnsigned( count, stackInSlot.getMaxStackSize() ) / 2;
                             ItemStack result = slot.decrStackSize( amount );
-                            playerInventory.setItemStack( result );
+                            InventoryPlayer.setItemStack( result );
                             return result;
                         }
                     }
@@ -395,19 +400,19 @@ public class TerribleChestContainer
                         if ( stackInSlot.isEmpty() )
                         { // 対象スロットが空
                             // 手持ちからスロットへ、一つアイテムを移動
-                            ItemStack _stack = stack.split( 1 );
+                            ItemStack _stack = stack.splitStack( 1 );
                             slot.putStack( _stack );
-                            playerInventory.setItemStack( stack );
+                            InventoryPlayer.setItemStack( stack );
                             return stack;
                         }
                         else if ( ItemHandlerHelper.canItemStacksStack( stack, stackInSlot ) )
                         {
-                            int count = data.get( slotId );
+                            int count = inventory.getField( slotId );
                             if ( count != -1 )
                             {
                                 stack.shrink( 1 );
-                                data.set( slotId, count + 1 );
-                                playerInventory.setItemStack( stack );
+                                inventory.setField( slotId, count + 1 );
+                                InventoryPlayer.setItemStack( stack );
                                 return stack;
                             }
                         }
@@ -415,16 +420,16 @@ public class TerribleChestContainer
                 }
                 else if ( _dragType == 2 )
                 { // 独自イベント処理 [スロット入れ替え]
-                    int swapTarget = data.get( TerribleChestTileEntity.DATA_SWAP_TARGET );
+                    int swapTarget = inventory.getField( TerribleChestTileEntity.DATA_SWAP_TARGET );
                     if ( swapTarget >= 0 )
                     {
                         int value = 0x10000 + ( swapTarget << 8 ) + slotId;
-                        data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, value );
+                        inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, value );
                         detectAndSendChanges();
                     }
                     else
                     {
-                        data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, slotId );
+                        inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, slotId );
                     }
                 }
                 else if ( _dragType == 3 )
@@ -434,8 +439,8 @@ public class TerribleChestContainer
                         ItemStack copy = ItemHandlerHelper.copyStackWithSize( stackInSlot, 1 );
                         if ( mergeItemStack( copy, 27, 63, true ) )
                         {
-                            int newCount = data.get( slotId ) - 1;
-                            data.set( slotId, newCount );
+                            int newCount = inventory.getField( slotId ) - 1;
+                            inventory.setField( slotId, newCount );
                             if ( newCount == 0 )
                             {
                                 slot.putStack( ItemStack.EMPTY );
@@ -447,23 +452,23 @@ public class TerribleChestContainer
             }
             else if ( clickTypeIn == ClickType.THROW )
             { // アイテムドロップ処理
-                data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
+                inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
 
-                ItemStack stack = playerInventory.getItemStack();
+                ItemStack stack = InventoryPlayer.getItemStack();
                 if ( stack.isEmpty() )
                 { // 手持ちのスタックが存在しない
                     Slot slot = getSlot( slotId );
                     ItemStack stackInSlot = slot.getStack();
                     if ( !stackInSlot.isEmpty() )
                     { // 対象スロットが空ではない
-                        int count = data.get( slotId );
+                        int count = inventory.getField( slotId );
                         // コントロールが押下されている場合は最大スタック（あるいは在庫）数をドロップ
                         int stackSize = dragType == 1 ? stackInSlot.getMaxStackSize() : 1;
                         int dropSize = IntUtil.minUnsigned( stackSize, count );
                         ItemStack dropStack = ItemHandlerHelper.copyStackWithSize( stackInSlot, dropSize );
                         player.dropItem( dropStack, false );
                         int newCount = count - dropSize;
-                        data.set( slotId, newCount );
+                        inventory.setField( slotId, newCount );
                         if ( newCount == 0 )
                         {
                             slot.putStack( ItemStack.EMPTY );
@@ -474,7 +479,7 @@ public class TerribleChestContainer
             }
             else if ( clickTypeIn == ClickType.QUICK_MOVE )
             { // シフトクリック処理
-                data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
+                inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
 
                 if ( dragType == 2 )
                 { // 独自イベント処理 [同種アイテム一括移動]
@@ -508,13 +513,13 @@ public class TerribleChestContainer
                       clickTypeIn == ClickType.QUICK_CRAFT ||
                       clickTypeIn == ClickType.SWAP )
             {
-                data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
+                inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
                 return ItemStack.EMPTY;
             }
         }
         else if ( slotId >= 27 && slotId < 63 )
         { // プレイヤーインベントリのスロットがクリックされた
-            data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
+            inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
 
             if ( clickTypeIn == ClickType.PICKUP )
             { // 通常のクリック処理
@@ -555,8 +560,43 @@ public class TerribleChestContainer
         }
         else
         {
-            data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
+            inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, -1 );
         }
         return super.slotClick( slotId, dragType, clickTypeIn, player );
+    }
+
+    private static class DummyInventory
+        extends InventoryBasic
+    {
+        private int[] data = new int[ 30 ];
+
+        {
+            data[ TerribleChestTileEntity.DATA_PAGE ] = 0;
+            data[ TerribleChestTileEntity.DATA_MAX_PAGE ] = 1;
+            data[ TerribleChestTileEntity.DATA_SWAP_TARGET ] = -1;
+        }
+
+        DummyInventory()
+        {
+            super( "dummy", false, 27 );
+        }
+
+        @Override
+        public int getField( int id )
+        {
+            return data[ id ];
+        }
+
+        @Override
+        public void setField( int id, int value )
+        {
+            data[ id ] = value;
+        }
+
+        @Override
+        public int getFieldCount()
+        {
+            return 30;
+        }
     }
 }

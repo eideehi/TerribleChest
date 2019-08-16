@@ -25,22 +25,24 @@
 package net.eidee.minecraft.terrible_chest.registry;
 
 import net.eidee.minecraft.terrible_chest.network.Networks;
-import net.eidee.minecraft.terrible_chest.network.message.gui.handler.TerribleChestGuiMessageHandler;
 import net.eidee.minecraft.terrible_chest.network.message.gui.ChangePage;
 import net.eidee.minecraft.terrible_chest.network.message.gui.UnlockMaxPage;
+import net.eidee.minecraft.terrible_chest.network.message.gui.handler.TerribleChestGuiMessageHandler;
+
+import net.minecraftforge.fml.relauncher.Side;
 
 public class MessageRegistry
 {
     public static void register()
     {
         int id = 0;
-        Networks.TERRIBLE_CHEST.registerMessage( id++, ChangePage.class,
-                                                 ChangePage::encode,
-                                                 ChangePage::decode,
-                                                 TerribleChestGuiMessageHandler::changePage );
-        Networks.TERRIBLE_CHEST.registerMessage( id++, UnlockMaxPage.class,
-                                                 UnlockMaxPage::encode,
-                                                 UnlockMaxPage::decode,
-                                                 TerribleChestGuiMessageHandler::unlockMaxPage );
+        Networks.TERRIBLE_CHEST.registerMessage( TerribleChestGuiMessageHandler.ChangePageHandler.class,
+                                                 ChangePage.class,
+                                                 id++,
+                                                 Side.SERVER );
+        Networks.TERRIBLE_CHEST.registerMessage( TerribleChestGuiMessageHandler.UnlockMaxPageHandler.class,
+                                                 UnlockMaxPage.class,
+                                                 id++,
+                                                 Side.SERVER );
     }
 }

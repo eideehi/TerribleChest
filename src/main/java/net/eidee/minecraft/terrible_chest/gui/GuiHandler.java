@@ -22,34 +22,53 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.inventory.container;
+package net.eidee.minecraft.terrible_chest.gui;
 
+import javax.annotation.Nullable;
+
+import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.IContainerFactory;
+import net.minecraftforge.fml.common.network.IGuiHandler;
 
-public class ContainerFactories
+public class GuiHandler
+    implements IGuiHandler
 {
-    private ContainerFactories()
-    {
-    }
+    public static final int GUI_TERRIBLE_CHEST = 0;
 
-    public static final IContainerFactory< TerribleChestContainer > TERRIBLE_CHEST;
-
-    static
+    @Nullable
+    @Override
+    public Object getServerGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
     {
-        TERRIBLE_CHEST = ( windowId, inv, data ) -> {
-            World world = inv.player.world;
-            BlockPos blockPos = data.readBlockPos();
-            TileEntity tileEntity = world.getTileEntity( blockPos );
+        if ( ID == GUI_TERRIBLE_CHEST )
+        {
+            TileEntity tileEntity = world.getTileEntity( new BlockPos( x, y, z ) );
             if ( tileEntity instanceof TerribleChestTileEntity )
             {
-                //return ( ( TerribleChestTileEntity )tileEntity ).createMenu( windowId, inv );
+                TerribleChestTileEntity terribleChestTileEntity = ( TerribleChestTileEntity )tileEntity;
+                return terribleChestTileEntity.createContainer( player.inventory );
             }
-            return null;
-        };
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Object getClientGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
+    {
+        if ( ID == GUI_TERRIBLE_CHEST )
+        {
+            TileEntity tileEntity = world.getTileEntity( new BlockPos( x, y, z ) );
+            if ( tileEntity instanceof TerribleChestTileEntity )
+            {
+                TerribleChestContainer container = new TerribleChestContainer( player.inventory );
+                return new TerribleChestScreen( container, player.inventory );
+            }
+        }
+        return null;
     }
 }

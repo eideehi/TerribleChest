@@ -30,16 +30,20 @@ import net.eidee.minecraft.terrible_chest.block.TerribleChestBlock;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItem;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
+@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID )
 public class BlockRegistry
 {
     @SubscribeEvent
@@ -48,11 +52,10 @@ public class BlockRegistry
         IForgeRegistry< Block > registry = event.getRegistry();
 
         Block block;
-        Block.Properties prop;
         {
-            prop = Block.Properties.create( Material.IRON )
-                                   .hardnessAndResistance( 3.0F );
-            block = new TerribleChestBlock( prop ).setRegistryName( Names.TERRIBLE_CHEST );
+            block = new TerribleChestBlock().setUnlocalizedName( Names.TERRIBLE_CHEST.replace( ':', '.' ) )
+                                            .setRegistryName( Names.TERRIBLE_CHEST )
+                                            .setCreativeTab( CreativeTabs.DECORATIONS );
             registry.register( block );
         }
     }
@@ -63,12 +66,18 @@ public class BlockRegistry
         IForgeRegistry< Item > registry = event.getRegistry();
 
         Item item;
-        Item.Properties prop;
         {
-            prop = new Item.Properties().group( ItemGroup.DECORATIONS );
-
-            item = new BlockItem( Blocks.TERRIBLE_CHEST, prop ).setRegistryName( Names.TERRIBLE_CHEST );
+            item = new ItemBlock( Blocks.TERRIBLE_CHEST ).setRegistryName( Names.TERRIBLE_CHEST );
             registry.register( item );
         }
+    }
+
+    @SubscribeEvent
+    @SideOnly( Side.CLIENT )
+    public static void modelRegister( ModelRegistryEvent event )
+    {
+        Item item = Item.getItemFromBlock( Blocks.TERRIBLE_CHEST );
+        ModelResourceLocation key = new ModelResourceLocation( Names.TERRIBLE_CHEST, "inventory" );
+        ModelLoader.setCustomModelResourceLocation( item, 0, key );
     }
 }

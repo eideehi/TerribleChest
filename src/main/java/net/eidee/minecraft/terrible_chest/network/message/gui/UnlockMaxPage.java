@@ -24,16 +24,20 @@
 
 package net.eidee.minecraft.terrible_chest.network.message.gui;
 
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class UnlockMaxPage
+    implements IMessage
 {
-    public static void encode( UnlockMaxPage message, PacketBuffer buffer )
+    @Override
+    public void fromBytes( ByteBuf buf )
     {
     }
 
-    public static UnlockMaxPage decode( PacketBuffer buffer )
+    @Override
+    public void toBytes( ByteBuf buf )
     {
-        return new UnlockMaxPage();
     }
 }

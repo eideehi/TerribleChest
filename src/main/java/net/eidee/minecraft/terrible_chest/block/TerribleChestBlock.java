@@ -24,63 +24,82 @@
 
 package net.eidee.minecraft.terrible_chest.block;
 
+import java.util.Random;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import mcp.MethodsReturnNonnullByDefault;
+import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.gui.GuiHandler;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.Hand;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.common.extensions.IForgeBlock;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class TerribleChestBlock
-    extends Block
-    implements IForgeBlock
+    extends BlockContainer
 {
-    public TerribleChestBlock( Properties properties )
+    public TerribleChestBlock()
     {
-        super( properties );
-    }
-
-
-    @Override
-    public BlockRenderType getRenderType( BlockState state )
-    {
-        return BlockRenderType.MODEL;
+        super( Material.IRON );
+        setHardness( 3.0F );
+        setResistance( 10.0F );
+        setSoundType( SoundType.METAL );
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer()
+    public Item getItemDropped( IBlockState state, Random rand, int fortune )
+    {
+        return Item.getItemFromBlock( Blocks.TERRIBLE_CHEST );
+    }
+
+    @Override
+    public ItemStack getPickBlock( IBlockState state,
+                                   RayTraceResult target,
+                                   World world,
+                                   BlockPos pos,
+                                   EntityPlayer player )
+    {
+        return new ItemStack( Blocks.TERRIBLE_CHEST );
+    }
+
+    @Override
+    public boolean isOpaqueCube( IBlockState state )
+    {
+        return false;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType( IBlockState state )
+    {
+        return EnumBlockRenderType.MODEL;
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }
 
-
-    @Override
-    public boolean hasTileEntity( BlockState state )
-    {
-        return true;
-    }
-
     @Nullable
     @Override
-    public TileEntity createTileEntity( BlockState state, IBlockReader world )
+    public TileEntity createNewTileEntity( World worldIn, int meta )
     {
         return new TerribleChestTileEntity();
     }
@@ -88,36 +107,44 @@ public class TerribleChestBlock
     @Override
     public void onBlockPlacedBy( World worldIn,
                                  BlockPos pos,
-                                 BlockState state,
-                                 @Nullable LivingEntity placer,
+                                 IBlockState state,
+                                 EntityLivingBase placer,
                                  ItemStack stack )
     {
         TileEntity tileEntity = worldIn.getTileEntity( pos );
         if ( tileEntity instanceof TerribleChestTileEntity &&
-             placer instanceof PlayerEntity )
+             placer instanceof EntityPlayer )
         {
-            PlayerEntity player = ( PlayerEntity )placer;
+            EntityPlayer player = ( EntityPlayer )placer;
             ( ( TerribleChestTileEntity )tileEntity ).setOwnerId( player.getUniqueID() );
         }
     }
 
     @Override
-    public boolean onBlockActivated( BlockState state,
-                                     World worldIn,
+    public boolean onBlockActivated( World worldIn,
                                      BlockPos pos,
-                                     PlayerEntity player,
-                                     Hand handIn,
-                                     BlockRayTraceResult hit )
+                                     IBlockState state,
+                                     EntityPlayer playerIn,
+                                     EnumHand hand,
+                                     EnumFacing facing,
+                                     float hitX,
+                                     float hitY,
+                                     float hitZ )
     {
-        if ( !worldIn.isRemote() )
+        if ( !worldIn.isRemote )
         {
             TileEntity tileEntity = worldIn.getTileEntity( pos );
             if ( tileEntity instanceof TerribleChestTileEntity )
             {
                 TerribleChestTileEntity terribleChest = ( TerribleChestTileEntity )tileEntity;
-                if ( terribleChest.isOwner( player ) && player instanceof ServerPlayerEntity )
+                if ( terribleChest.isOwner( playerIn ) )
                 {
-                    NetworkHooks.openGui( ( ServerPlayerEntity )player, terribleChest );
+                    playerIn.openGui( TerribleChest.INSTANCE,
+                                      GuiHandler.GUI_TERRIBLE_CHEST,
+                                      worldIn,
+                                      pos.getX(),
+                                      pos.getY(),
+                                      pos.getZ() );
                 }
             }
         }

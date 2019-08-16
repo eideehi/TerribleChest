@@ -1,0 +1,16 @@
+[
+{
+  "modid": "terrible_chest",
+  "name": "Terrible Chest",
+  "description": "Add chest the terrible spec.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://www.curseforge.com/minecraft/mc-mods/terrible-chest",
+  "updateUrl": "https://raw.githubusercontent.com/eideehi/TerribleChest/master/update.json",
+  "authorList": ["EideeHi"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

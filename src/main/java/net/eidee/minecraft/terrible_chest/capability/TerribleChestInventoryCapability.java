@@ -30,13 +30,12 @@ import javax.annotation.Nullable;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
 
 public class TerribleChestInventoryCapability
 {
@@ -47,9 +46,9 @@ public class TerribleChestInventoryCapability
     {
         @Nullable
         @Override
-        public INBT writeNBT( Capability< TerribleChestInventory > capability,
-                              TerribleChestInventory instance,
-                              Direction side )
+        public NBTBase writeNBT( Capability< TerribleChestInventory > capability,
+                                 TerribleChestInventory instance,
+                                 EnumFacing side )
         {
             return instance.serializeNBT();
         }
@@ -57,18 +56,19 @@ public class TerribleChestInventoryCapability
         @Override
         public void readNBT( Capability< TerribleChestInventory > capability,
                              TerribleChestInventory instance,
-                             Direction side,
-                             INBT nbt )
+                             EnumFacing side,
+                             NBTBase nbt )
         {
-            if ( nbt instanceof CompoundNBT )
+            if ( nbt instanceof NBTTagCompound )
             {
-                instance.deserializeNBT( ( CompoundNBT )nbt );
+                instance.deserializeNBT( ( NBTTagCompound )nbt );
             }
         }
+
     }
 
     public static class Provider
-        implements ICapabilitySerializable< CompoundNBT >
+        implements ICapabilitySerializable< NBTTagCompound >
     {
         private final Capability< TerribleChestInventory > _cap;
         private TerribleChestInventory instance;
@@ -79,21 +79,28 @@ public class TerribleChestInventoryCapability
             this.instance = this._cap.getDefaultInstance();
         }
 
-        @Nonnull
         @Override
-        public < T > LazyOptional< T > getCapability( @Nonnull Capability< T > cap, @Nullable Direction side )
+        public boolean hasCapability( @Nonnull Capability< ? > capability, @Nullable EnumFacing facing )
         {
-            return _cap.orEmpty( cap, LazyOptional.of( () -> instance ) );
+            return capability == _cap;
+        }
+
+        @SuppressWarnings( "unchecked" )
+        @Nullable
+        @Override
+        public < T > T getCapability( @Nonnull Capability< T > capability, @Nullable EnumFacing facing )
+        {
+            return capability == _cap ? ( T )instance : null;
         }
 
         @Override
-        public CompoundNBT serializeNBT()
+        public NBTTagCompound serializeNBT()
         {
-            return ( CompoundNBT )_cap.writeNBT( instance, null );
+            return ( NBTTagCompound )_cap.writeNBT( instance, null );
         }
 
         @Override
-        public void deserializeNBT( CompoundNBT nbt )
+        public void deserializeNBT( NBTTagCompound nbt )
         {
             _cap.readNBT( instance, null, nbt );
         }

@@ -24,40 +24,44 @@
 
 package net.eidee.minecraft.terrible_chest.network.message.gui.handler;
 
-import java.util.function.Supplier;
-
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 import net.eidee.minecraft.terrible_chest.network.message.gui.ChangePage;
 import net.eidee.minecraft.terrible_chest.network.message.gui.UnlockMaxPage;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class TerribleChestGuiMessageHandler
 {
-    public static void changePage( ChangePage message, Supplier< NetworkEvent.Context > ctx )
+    public static class ChangePageHandler
+        implements IMessageHandler< ChangePage, IMessage >
     {
-        NetworkEvent.Context _ctx = ctx.get();
-        _ctx.enqueueWork( () -> {
-            ServerPlayerEntity player = _ctx.getSender();
+        @Override
+        public IMessage onMessage( ChangePage message, MessageContext ctx )
+        {
+            EntityPlayerMP player = ctx.getServerHandler().player;
             if ( player != null && player.openContainer instanceof TerribleChestContainer )
             {
                 ( ( TerribleChestContainer )player.openContainer ).setPage( message.getPage() );
             }
-        } );
-        _ctx.setPacketHandled( true );
+            return null;
+        }
     }
 
-    public static void unlockMaxPage( UnlockMaxPage message, Supplier< NetworkEvent.Context > ctx )
+    public static class UnlockMaxPageHandler
+        implements IMessageHandler< UnlockMaxPage, IMessage >
     {
-        NetworkEvent.Context _ctx = ctx.get();
-        _ctx.enqueueWork( () -> {
-            ServerPlayerEntity player = _ctx.getSender();
+        @Override
+        public IMessage onMessage( UnlockMaxPage message, MessageContext ctx )
+        {
+            EntityPlayerMP player = ctx.getServerHandler().player;
             if ( player != null && player.openContainer instanceof TerribleChestContainer )
             {
                 ( ( TerribleChestContainer )player.openContainer ).unlockMaxPage();
             }
-        } );
-        _ctx.setPacketHandled( true );
+            return null;
+        }
     }
 }

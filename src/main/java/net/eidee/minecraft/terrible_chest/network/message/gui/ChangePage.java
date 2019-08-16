@@ -24,11 +24,18 @@
 
 package net.eidee.minecraft.terrible_chest.network.message.gui;
 
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class ChangePage
+    implements IMessage
 {
     private int page;
+
+    public ChangePage()
+    {
+    }
 
     public ChangePage( int page )
     {
@@ -40,13 +47,15 @@ public class ChangePage
         return page;
     }
 
-    public static void encode( ChangePage message, PacketBuffer buffer )
+    @Override
+    public void fromBytes( ByteBuf buf )
     {
-        buffer.writeInt( message.page );
+        page = buf.readInt();
     }
 
-    public static ChangePage decode( PacketBuffer buffer )
+    @Override
+    public void toBytes( ByteBuf buf )
     {
-        return new ChangePage( buffer.readInt() );
+        buf.writeInt( page );
     }
 }

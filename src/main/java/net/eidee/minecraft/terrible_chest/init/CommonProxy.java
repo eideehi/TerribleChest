@@ -22,20 +22,29 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.inventory.container;
+package net.eidee.minecraft.terrible_chest.init;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.network.Networks;
+import net.eidee.minecraft.terrible_chest.registry.CapabilityRegistry;
+import net.eidee.minecraft.terrible_chest.registry.GuiHandlerRegistry;
+import net.eidee.minecraft.terrible_chest.registry.MessageRegistry;
+import net.eidee.minecraft.terrible_chest.registry.TileEntityRegistry;
 
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class ContainerTypes
+public class CommonProxy
 {
-    private ContainerTypes()
+    public void preInit( FMLPreInitializationEvent event )
     {
+        CapabilityRegistry.register();
+        Networks.init();
+        MessageRegistry.register();
+        GuiHandlerRegistry.register();
+        TileEntityRegistry.register();
     }
 
-    @ObjectHolder( Names.TERRIBLE_CHEST )
-    public static ContainerType< TerribleChestContainer > TERRIBLE_CHEST;
-
+    public void init( FMLInitializationEvent event )
+    {
+    }
 }

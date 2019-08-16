@@ -22,20 +22,9 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
 
-import net.eidee.minecraft.terrible_chest.gui.TerribleChestScreen;
-import net.eidee.minecraft.terrible_chest.inventory.container.ContainerTypes;
-
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-@OnlyIn( Dist.CLIENT )
-public class ScreenRegistry
+public class ClientProxy
+    extends CommonProxy
 {
-    public static void register()
-    {
-        ScreenManager.registerFactory( ContainerTypes.TERRIBLE_CHEST, TerribleChestScreen::new );
-    }
 }

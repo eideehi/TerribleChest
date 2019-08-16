@@ -24,28 +24,31 @@
 
 package net.eidee.minecraft.terrible_chest.registry;
 
-import net.eidee.minecraft.terrible_chest.TerribleChest;
+import static net.eidee.minecraft.terrible_chest.TerribleChest.MOD_ID;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.constants.Names;
-import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class ContainerTypeRegistry
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public class TileEntityRegistry
 {
-    @SubscribeEvent
-    public static void register( RegistryEvent.Register< ContainerType< ? > > event )
+
+    private static final ResourceLocation KEY_TERRIBLE_CHEST;
+
+    static
     {
-        IForgeRegistry< ContainerType< ? > > registry = event.getRegistry();
-        ContainerType< ? > containerType;
-        {
-            containerType = new ContainerType<>( TerribleChestContainer::new ).setRegistryName( Names.TERRIBLE_CHEST );
-            registry.register( containerType );
-        }
+        KEY_TERRIBLE_CHEST = new ResourceLocation( MOD_ID, Names.TERRIBLE_CHEST );
+    }
+
+    public static void register()
+    {
+        GameRegistry.registerTileEntity( TerribleChestTileEntity.class, KEY_TERRIBLE_CHEST );
     }
 }

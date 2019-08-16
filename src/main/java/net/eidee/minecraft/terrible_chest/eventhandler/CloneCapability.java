@@ -26,11 +26,12 @@ package net.eidee.minecraft.terrible_chest.eventhandler;
 
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
+import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID )
 public class CloneCapability
@@ -38,16 +39,16 @@ public class CloneCapability
     @SubscribeEvent
     public static void cloneCapability( PlayerEvent.Clone event )
     {
-        PlayerEntity original = event.getOriginal();
-        original.revive();
-        original.getCapability( Capabilities.TERRIBLE_CHEST )
-                .ifPresent( inventory -> {
-                    PlayerEntity clone = event.getEntityPlayer();
-                    clone.getCapability( Capabilities.TERRIBLE_CHEST )
-                         .ifPresent( cloneInventory -> {
-                             cloneInventory.deserializeNBT( inventory.serializeNBT() );
-                         } );
-                } );
-        original.remove( true );
+        EntityPlayer original = event.getOriginal();
+        TerribleChestInventory capability = original.getCapability( Capabilities.TERRIBLE_CHEST, null );
+        if ( capability != null )
+        {
+            EntityPlayer clone = event.getEntityPlayer();
+            TerribleChestInventory cloneCapability = clone.getCapability( Capabilities.TERRIBLE_CHEST, null );
+            if ( cloneCapability != null )
+            {
+                cloneCapability.deserializeNBT( capability.serializeNBT() );
+            }
+        }
     }
 }

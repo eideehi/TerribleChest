@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.tileentity;
+package net.eidee.minecraft.terrible_chest.registry;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.gui.GuiHandler;
 
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-public class TileEntityTypes
+
+public class GuiHandlerRegistry
 {
-    private TileEntityTypes()
+    public static void register()
     {
+        NetworkRegistry.INSTANCE.registerGuiHandler( TerribleChest.INSTANCE, new GuiHandler() );
     }
-
-    @ObjectHolder( Names.TERRIBLE_CHEST )
-    public static TileEntityType< TerribleChestTileEntity > TERRIBLE_CHEST;
 }

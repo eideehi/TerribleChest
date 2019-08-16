@@ -27,7 +27,7 @@ package net.eidee.minecraft.terrible_chest.item;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 
 import net.minecraft.item.Item;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class Items
 {
@@ -36,6 +36,6 @@ public class Items
     }
 
 
-    @ObjectHolder( Names.DIAMOND_SPHERE )
+    @GameRegistry.ObjectHolder( Names.DIAMOND_SPHERE )
     public static Item DIAMOND_SPHERE;
 }
