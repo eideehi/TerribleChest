@@ -18,7 +18,7 @@ version="1.14.4-1" #mandatory
  # A display name for the mod
 displayName="Terrible Chest" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="https://github.com/eideehi/TerribleChest/blob/1.14.4-1/update.json" #optional
+updateJSONURL="https://raw.githubusercontent.com/eideehi/TerribleChest/master/update.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://github.com/eideehi/TerribleChest/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
