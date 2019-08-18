@@ -26,6 +26,7 @@ package net.eidee.minecraft.terrible_chest.tileentity;
 
 import static net.eidee.minecraft.terrible_chest.TerribleChest.MOD_ID;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -51,6 +52,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -69,6 +71,8 @@ public class TerribleChestTileEntity
     public static final int DATA_PAGE = 27;
     public static final int DATA_MAX_PAGE = 28;
     public static final int DATA_SWAP_TARGET = 29;
+    //public static final int DATA_SORT_TYPE = 30;
+    public static final int SWAP_EXEC_FLAG = 0b0100_0000_0000_0000_0000_0000_0000_0000;
 
     private UUID ownerId;
     private int page;
@@ -101,6 +105,12 @@ public class TerribleChestTileEntity
                 {
                     return swapTarget;
                 }
+                /*
+                else if ( index == DATA_SORT_TYPE )
+                {
+                    return -1;
+                }
+                 */
                 return 0;
             }
 
@@ -117,7 +127,6 @@ public class TerribleChestTileEntity
                 else if ( index == DATA_PAGE )
                 {
                     page = value;
-                    swapTarget = -1;
                 }
                 else if ( index == DATA_MAX_PAGE && inventory != null )
                 {
@@ -125,19 +134,25 @@ public class TerribleChestTileEntity
                 }
                 else if ( index == DATA_SWAP_TARGET && inventory != null )
                 {
-                    if ( value > 0x10000 )
+                    if ( ( value & SWAP_EXEC_FLAG ) != 0 )
                     {
-                        int _value = value - 0x10000;
-                        int index1 = _value >> 8;
-                        int index2 = _value & 0xFF;
-                        inventory.swap( index1, index2 );
+                        int _value = value - SWAP_EXEC_FLAG;
+                        int index1 = _value >> 15;
+                        int index2 = _value & 0x7FFF;
+                        inventory.inventory.swap( index1, index2 );
                         swapTarget = -1;
                     }
                     else
                     {
-                        swapTarget = Math.max( value, -1 );
+                        swapTarget = value;
                     }
                 }
+                /*
+                else if ( index == DATA_SORT_TYPE && inventory != null )
+                {
+                    InventorySorter.DEFAULT.sort( inventory );
+                }
+                 */
             }
 
             @Override
@@ -415,7 +430,6 @@ public class TerribleChestTileEntity
             return tileEntity.page * 27;
         }
 
-
         private int getItemCount( int index )
         {
             return inventory.getItemCount( getOffset() + index );
@@ -514,4 +528,107 @@ public class TerribleChestTileEntity
             tileEntity.resetInventory();
         }
     }
+/*
+    private abstract static class InventorySorter
+    {
+        private static final Comparator< ItemStack > ModId = ( stack1, stack2 ) -> {
+            ResourceLocation registryName1 = stack1.getItem().getRegistryName();
+            ResourceLocation registryName2 = stack2.getItem().getRegistryName();
+            if ( registryName1 != null && registryName2 != null )
+            {
+                return registryName1.getNamespace().compareTo( registryName2.getNamespace() );
+            }
+            else if ( registryName1 == null && registryName2 == null )
+            {
+                return 0;
+            }
+            return registryName1 == null ? 1 : -1;
+        };
+
+        private static final Comparator< ItemStack > ItemName = ( stack1, stack2 ) -> {
+            ResourceLocation registryName1 = stack1.getItem().getRegistryName();
+            ResourceLocation registryName2 = stack2.getItem().getRegistryName();
+            if ( registryName1 != null && registryName2 != null )
+            {
+                return registryName1.getPath().compareTo( registryName2.getPath() );
+            }
+            else if ( registryName1 == null && registryName2 == null )
+            {
+                return 0;
+            }
+            return registryName1 == null ? 1 : -1;
+        };
+
+        private static final Comparator< ItemStack > StackSize = ( stack1, stack2 ) -> {
+            return Integer.compare( stack1.getCount(), stack2.getCount() );
+        };
+
+        private boolean preCompare( ItemStack stack1, ItemStack stack2 )
+        {
+            return !stack1.isEmpty() && !stack2.isEmpty() ||
+                   stack1.isEmpty() && !stack2.isEmpty();
+        }
+
+        public abstract Comparator< ItemStack > getComparator();
+
+        final void sort( Inventory inventory )
+        {
+            int size = inventory.getSizeInventory();
+            for ( int i = 0; i < size; i++ )
+            {
+                for ( int j = size - 1; j > i; j-- )
+                {
+                    ItemStack stack1 = inventory.getStackInSlot( i );
+                    ItemStack stack2 = inventory.getStackInSlot( j );
+                    if ( ItemHandlerHelper.canItemStacksStack( stack1, stack2 ) )
+                    {
+                        int itemCount1 = inventory.getItemCount( i );
+                        int itemCount2 = inventory.getItemCount( j );
+                        // TODO: オーバーフロー防止
+                        inventory.setItemCount( i, itemCount1 + itemCount2 );
+                        inventory.removeStackFromSlot( j );
+                    }
+                }
+            }
+
+            Comparator< ItemStack > comparator = getComparator();
+            boolean swap;
+            for ( int i = 0; i < size - 1; i++ )
+            {
+                swap = false;
+                for ( int j = 1; j < size - ( i + 1 ); j++ )
+                {
+                    ItemStack stack1 = inventory.getStackInSlot( j - 1 );
+                    ItemStack stack2 = inventory.getStackInSlot( j );
+                    if ( preCompare( stack1, stack2 ) )
+                    {
+                        if ( stack1.isEmpty() )
+                        {
+                            swap = true;
+                            inventory.swap( j - 1, j );
+                        }
+                        else if ( comparator.compare( stack1, stack2 ) > 0 )
+                        {
+                            swap = true;
+                            inventory.swap( j - 1, j );
+                        }
+                    }
+                }
+                if ( !swap )
+                {
+                    break;
+                }
+            }
+        }
+
+        static InventorySorter DEFAULT = new InventorySorter()
+        {
+            @Override
+            public Comparator< ItemStack > getComparator()
+            {
+                return ItemName.thenComparing( ModId ).thenComparing( StackSize );
+            }
+        };
+    }
+ */
 }

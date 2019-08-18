@@ -415,16 +415,17 @@ public class TerribleChestContainer
                 }
                 else if ( _dragType == 2 )
                 { // 独自イベント処理 [スロット入れ替え]
+                    int actualSlotId = slotId + ( data.get( TerribleChestTileEntity.DATA_PAGE ) * 27 );
                     int swapTarget = data.get( TerribleChestTileEntity.DATA_SWAP_TARGET );
                     if ( swapTarget >= 0 )
                     {
-                        int value = 0x10000 + ( swapTarget << 8 ) + slotId;
+                        int value = TerribleChestTileEntity.SWAP_EXEC_FLAG + ( swapTarget << 15 ) + actualSlotId;
                         data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, value );
                         detectAndSendChanges();
                     }
                     else
                     {
-                        data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, slotId );
+                        data.set( TerribleChestTileEntity.DATA_SWAP_TARGET, actualSlotId );
                     }
                 }
                 else if ( _dragType == 3 )
@@ -503,6 +504,14 @@ public class TerribleChestContainer
                     return ItemStack.EMPTY;
                 }
             }
+            /*
+            else if ( clickTypeIn == ClickType.SWAP )
+            { // 独自イベント処理 [ソート]
+                data.set( TerribleChestTileEntity.DATA_SORT_TYPE, dragType );
+                detectAndSendChanges();
+                return ItemStack.EMPTY;
+            }
+             */
             else if ( clickTypeIn == ClickType.CLONE ||
                       clickTypeIn == ClickType.PICKUP_ALL ||
                       clickTypeIn == ClickType.QUICK_CRAFT ||

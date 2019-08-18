@@ -89,20 +89,6 @@ public class TerribleChestScreen
     }
 
     @Override
-    public boolean keyPressed( int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_ )
-    {
-        /*
-        if ( p_keyPressed_1_ == GLFW.GLFW_KEY_LEFT_ALT ||
-             p_keyPressed_1_ == GLFW.GLFW_KEY_RIGHT_ALT )
-        {
-            handleMouseClick( hoveredSlot, hoveredSlot.slotNumber, 0, ClickType.PICKUP_ALL );
-            return true;
-        }
-        */
-        return super.keyPressed( p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_ );
-    }
-
-    @Override
     protected void handleMouseClick( Slot slotIn, int slotId, int mouseButton, ClickType type )
     {
         if ( type == ClickType.PICKUP && mouseButton == 0 )
@@ -173,18 +159,22 @@ public class TerribleChestScreen
         blit( guiLeft, guiTop, 0, 0, xSize, ySize );
 
         int swapTarget = container.getSwapTarget();
-        if ( swapTarget >= 0 && swapTarget < 27 )
+        if ( swapTarget != -1 )
         {
-            Slot slot = container.getSlot( swapTarget );
-            GlStateManager.disableLighting();
-            GlStateManager.disableDepthTest();
-            int x = guiLeft + slot.xPos;
-            int y = guiTop + slot.yPos;
-            GlStateManager.colorMask( true, true, true, false );
-            fillGradient( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
-            GlStateManager.colorMask( true, true, true, true );
-            GlStateManager.enableLighting();
-            GlStateManager.enableDepthTest();
+            int slotId = swapTarget - ( container.getPage() * 27 );
+            if ( slotId >= 0 && slotId < 27 )
+            {
+                Slot slot = container.getSlot( slotId );
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepthTest();
+                int x = guiLeft + slot.xPos;
+                int y = guiTop + slot.yPos;
+                GlStateManager.colorMask( true, true, true, false );
+                fillGradient( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
+                GlStateManager.colorMask( true, true, true, true );
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepthTest();
+            }
         }
     }
 

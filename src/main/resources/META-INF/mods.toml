@@ -14,13 +14,13 @@ issueTrackerURL="https://github.com/eideehi/TerribleChest/issues" #optional
 # The modid of the mod
 modId="terrible_chest" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.14.4-1" #mandatory
+version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Terrible Chest" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 updateJSONURL="https://raw.githubusercontent.com/eideehi/TerribleChest/master/update.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://github.com/eideehi/TerribleChest/" #optional
+displayURL="https://www.curseforge.com/minecraft/mc-mods/terrible-chest" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="" #optional
 # A text field displayed in the mod UI
