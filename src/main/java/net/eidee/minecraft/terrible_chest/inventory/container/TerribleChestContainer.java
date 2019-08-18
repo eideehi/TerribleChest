@@ -420,16 +420,17 @@ public class TerribleChestContainer
                 }
                 else if ( _dragType == 2 )
                 { // 独自イベント処理 [スロット入れ替え]
+                    int actualSlotId = slotId + ( inventory.getField( TerribleChestTileEntity.DATA_PAGE ) * 27 );
                     int swapTarget = inventory.getField( TerribleChestTileEntity.DATA_SWAP_TARGET );
                     if ( swapTarget >= 0 )
                     {
-                        int value = 0x10000 + ( swapTarget << 8 ) + slotId;
+                        int value = TerribleChestTileEntity.SWAP_EXEC_FLAG + ( swapTarget << 15 ) + actualSlotId;
                         inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, value );
                         detectAndSendChanges();
                     }
                     else
                     {
-                        inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, slotId );
+                        inventory.setField( TerribleChestTileEntity.DATA_SWAP_TARGET, actualSlotId );
                     }
                 }
                 else if ( _dragType == 3 )

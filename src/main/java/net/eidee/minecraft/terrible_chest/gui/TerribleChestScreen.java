@@ -181,18 +181,22 @@ public class TerribleChestScreen
         drawTexturedModalRect( guiLeft, guiTop, 0, 0, xSize, ySize );
 
         int swapTarget = inventory.getField( TerribleChestTileEntity.DATA_SWAP_TARGET );
-        if ( swapTarget >= 0 && swapTarget < 27 )
+        if ( swapTarget != -1 )
         {
-            Slot slot = inventorySlots.getSlot( swapTarget );
-            GlStateManager.disableLighting();
-            GlStateManager.disableDepth();
-            int x = guiLeft + slot.xPos;
-            int y = guiTop + slot.yPos;
-            GlStateManager.colorMask( true, true, true, false );
-            drawGradientRect( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
-            GlStateManager.colorMask( true, true, true, true );
-            GlStateManager.enableLighting();
-            GlStateManager.enableDepth();
+            int slotId = swapTarget - ( inventory.getField( TerribleChestTileEntity.DATA_PAGE ) * 27 );
+            if ( slotId >= 0 && slotId < 27 )
+            {
+                Slot slot = inventorySlots.getSlot( slotId );
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                int x = guiLeft + slot.xPos;
+                int y = guiTop + slot.yPos;
+                GlStateManager.colorMask( true, true, true, false );
+                drawGradientRect( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
+                GlStateManager.colorMask( true, true, true, true );
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+            }
         }
     }
 

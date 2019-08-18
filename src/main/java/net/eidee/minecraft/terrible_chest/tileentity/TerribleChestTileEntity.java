@@ -62,6 +62,7 @@ public class TerribleChestTileEntity
     public static final int DATA_PAGE = 27;
     public static final int DATA_MAX_PAGE = 28;
     public static final int DATA_SWAP_TARGET = 29;
+    public static final int SWAP_EXEC_FLAG = 0b0100_0000_0000_0000_0000_0000_0000_0000;
 
     private UUID ownerId;
     private int page;
@@ -455,7 +456,6 @@ public class TerribleChestTileEntity
             else if ( index == DATA_PAGE )
             {
                 tileEntity.page = value;
-                tileEntity.swapTarget = -1;
             }
             else if ( index == DATA_MAX_PAGE )
             {
@@ -463,17 +463,17 @@ public class TerribleChestTileEntity
             }
             else if ( index == DATA_SWAP_TARGET )
             {
-                if ( value > 0x10000 )
+                if ( ( value & SWAP_EXEC_FLAG ) != 0 )
                 {
-                    int _value = value - 0x10000;
-                    int index1 = _value >> 8;
-                    int index2 = _value & 0xFF;
-                    swap( index1, index2 );
+                    int _value = value - SWAP_EXEC_FLAG;
+                    int index1 = _value >> 15;
+                    int index2 = _value & 0x7FFF;
+                    inventory.swap( index1, index2 );
                     tileEntity.swapTarget = -1;
                 }
                 else
                 {
-                    tileEntity.swapTarget = Math.max( value, -1 );
+                    tileEntity.swapTarget = value;
                 }
             }
         }
