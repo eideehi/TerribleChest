@@ -26,23 +26,23 @@ package net.eidee.minecraft.terrible_chest.network.message.gui.handler;
 
 import java.util.function.Supplier;
 
-import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+import net.eidee.minecraft.terrible_chest.inventory.container.MultiPageContainer;
 import net.eidee.minecraft.terrible_chest.network.message.gui.ChangePage;
 import net.eidee.minecraft.terrible_chest.network.message.gui.UnlockMaxPage;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-public class TerribleChestGuiMessageHandler
+public class MultiPageMessageHandler
 {
     public static void changePage( ChangePage message, Supplier< NetworkEvent.Context > ctx )
     {
         NetworkEvent.Context _ctx = ctx.get();
         _ctx.enqueueWork( () -> {
             ServerPlayerEntity player = _ctx.getSender();
-            if ( player != null && player.openContainer instanceof TerribleChestContainer )
+            if ( player != null && player.openContainer instanceof MultiPageContainer )
             {
-                ( ( TerribleChestContainer )player.openContainer ).setPage( message.getPage() );
+                ( ( MultiPageContainer )player.openContainer ).setPage( message.getPage() );
             }
         } );
         _ctx.setPacketHandled( true );
@@ -53,9 +53,9 @@ public class TerribleChestGuiMessageHandler
         NetworkEvent.Context _ctx = ctx.get();
         _ctx.enqueueWork( () -> {
             ServerPlayerEntity player = _ctx.getSender();
-            if ( player != null && player.openContainer instanceof TerribleChestContainer )
+            if ( player != null && player.openContainer instanceof MultiPageContainer )
             {
-                ( ( TerribleChestContainer )player.openContainer ).unlockMaxPage();
+                ( ( MultiPageContainer )player.openContainer ).unlockMaxPage();
             }
         } );
         _ctx.setPacketHandled( true );

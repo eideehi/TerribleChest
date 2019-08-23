@@ -26,6 +26,7 @@ package net.eidee.minecraft.terrible_chest.registry;
 
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.item.TerribleBangleItem;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -48,6 +49,12 @@ public class ItemRegistry
             prop = new Item.Properties().group( ItemGroup.MISC );
 
             item = new Item( prop ).setRegistryName( Names.DIAMOND_SPHERE );
+            registry.register( item );
+        }
+        {
+            prop = new Item.Properties().group( ItemGroup.MISC );
+
+            item = new TerribleBangleItem( prop ).setRegistryName( Names.TERRIBLE_BANGLE );
             registry.register( item );
         }
     }

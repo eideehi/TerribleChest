@@ -28,6 +28,9 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import mcp.MethodsReturnNonnullByDefault;
+import net.eidee.minecraft.terrible_chest.config.Config;
+import net.eidee.minecraft.terrible_chest.tileentity.MultiPageTileEntity;
+import net.eidee.minecraft.terrible_chest.tileentity.SinglePageTileEntity;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
 import net.minecraft.block.Block;
@@ -82,7 +85,14 @@ public class TerribleChestBlock
     @Override
     public TileEntity createTileEntity( BlockState state, IBlockReader world )
     {
-        return new TerribleChestTileEntity();
+        if ( Config.COMMON.useSinglePageMode.get() )
+        {
+            return new SinglePageTileEntity();
+        }
+        else
+        {
+            return new MultiPageTileEntity();
+        }
     }
 
     @Override

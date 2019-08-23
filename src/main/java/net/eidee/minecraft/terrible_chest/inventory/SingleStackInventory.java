@@ -22,17 +22,21 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.capability;
+package net.eidee.minecraft.terrible_chest.inventory;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraft.inventory.Inventory;
 
-public class Capabilities
+public class SingleStackInventory
+    extends Inventory
 {
-    private Capabilities()
+    public SingleStackInventory( int numSlots )
     {
+        super( numSlots );
     }
 
-    @CapabilityInject( TerribleChestItemsCapability.class )
-    public static Capability< TerribleChestItemsCapability > TERRIBLE_CHEST;
+    @Override
+    public int getInventoryStackLimit()
+    {
+        return 1;
+    }
 }

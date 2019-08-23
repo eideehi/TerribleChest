@@ -25,11 +25,13 @@
 package net.eidee.minecraft.terrible_chest.registry;
 
 import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+import net.eidee.minecraft.terrible_chest.inventory.container.MultiPageContainer;
+import net.eidee.minecraft.terrible_chest.inventory.container.SinglePageContainer;
 
 import net.minecraft.inventory.container.ContainerType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +46,12 @@ public class ContainerTypeRegistry
         IForgeRegistry< ContainerType< ? > > registry = event.getRegistry();
         ContainerType< ? > containerType;
         {
-            containerType = new ContainerType<>( TerribleChestContainer::new ).setRegistryName( Names.TERRIBLE_CHEST );
+            ContainerType.IFactory< TerribleChestContainer > factory;
+            factory = ( id, playerInventory ) ->
+                Config.COMMON.useSinglePageMode.get() ? new SinglePageContainer( id, playerInventory )
+                                                      : new MultiPageContainer( id, playerInventory );
+
+            containerType = new ContainerType<>( factory ).setRegistryName( Names.TERRIBLE_CHEST );
             registry.register( containerType );
         }
     }

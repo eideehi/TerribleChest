@@ -24,10 +24,14 @@
 
 package net.eidee.minecraft.terrible_chest.registry;
 
+import java.util.concurrent.Callable;
+
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestInventoryCapability;
-import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestItemsCapability;
+import net.eidee.minecraft.terrible_chest.capability.logic.MultiPageLogic;
+import net.eidee.minecraft.terrible_chest.capability.logic.SinglePageLogic;
+import net.eidee.minecraft.terrible_chest.config.Config;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,9 +45,14 @@ public class CapabilityRegistry
 {
     public static void register()
     {
-        CapabilityManager.INSTANCE.register( TerribleChestInventory.class,
-                                             new TerribleChestInventoryCapability.Storage(),
-                                             TerribleChestInventory::new );
+        Callable< TerribleChestItemsCapability > factory;
+        factory = () -> {
+            return new TerribleChestItemsCapability( Config.COMMON.useSinglePageMode.get() ? SinglePageLogic::new
+                                                                                           : MultiPageLogic::new );
+        };
+        CapabilityManager.INSTANCE.register( TerribleChestItemsCapability.class,
+                                             new TerribleChestItemsCapability.Storage(),
+                                             factory );
     }
 
     @SubscribeEvent
@@ -52,8 +61,8 @@ public class CapabilityRegistry
         Entity entity = event.getObject();
         if ( entity instanceof PlayerEntity )
         {
-            event.addCapability( TerribleChestInventoryCapability.REGISTRY_KEY,
-                                 new TerribleChestInventoryCapability.Provider( Capabilities.TERRIBLE_CHEST ) );
+            event.addCapability( TerribleChestItemsCapability.REGISTRY_KEY,
+                                 new TerribleChestItemsCapability.Provider( Capabilities.TERRIBLE_CHEST ) );
         }
     }
 }

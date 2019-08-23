@@ -25,7 +25,7 @@
 package net.eidee.minecraft.terrible_chest.registry;
 
 import net.eidee.minecraft.terrible_chest.network.Networks;
-import net.eidee.minecraft.terrible_chest.network.message.gui.handler.TerribleChestGuiMessageHandler;
+import net.eidee.minecraft.terrible_chest.network.message.gui.handler.MultiPageMessageHandler;
 import net.eidee.minecraft.terrible_chest.network.message.gui.ChangePage;
 import net.eidee.minecraft.terrible_chest.network.message.gui.UnlockMaxPage;
 
@@ -37,10 +37,10 @@ public class MessageRegistry
         Networks.TERRIBLE_CHEST.registerMessage( id++, ChangePage.class,
                                                  ChangePage::encode,
                                                  ChangePage::decode,
-                                                 TerribleChestGuiMessageHandler::changePage );
+                                                 MultiPageMessageHandler::changePage );
         Networks.TERRIBLE_CHEST.registerMessage( id++, UnlockMaxPage.class,
                                                  UnlockMaxPage::encode,
                                                  UnlockMaxPage::decode,
-                                                 TerribleChestGuiMessageHandler::unlockMaxPage );
+                                                 MultiPageMessageHandler::unlockMaxPage );
     }
 }

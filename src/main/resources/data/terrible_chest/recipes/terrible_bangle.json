@@ -1,0 +1,16 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    " S ",
+    "S S",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "terrible_chest:diamond_sphere"
+    }
+  },
+  "result": {
+    "item": "terrible_chest:terrible_bangle"
+  }
+}

@@ -32,7 +32,9 @@ public class Names
     {
     }
 
-    public static final String TERRIBLE_CHEST = ( MOD_ID + ":terrible_chest" );
-
     public static final String DIAMOND_SPHERE = ( MOD_ID + ":diamond_sphere" );
+
+    public static final String TERRIBLE_BANGLE = ( MOD_ID + ":terrible_bangle" );
+
+    public static final String TERRIBLE_CHEST = ( MOD_ID + ":terrible_chest" );
 }

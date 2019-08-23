@@ -32,7 +32,10 @@ import com.mojang.datafixers.types.Type;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.block.Blocks;
+import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.tileentity.MultiPageTileEntity;
+import net.eidee.minecraft.terrible_chest.tileentity.SinglePageTileEntity;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
 import net.minecraft.block.Block;
@@ -62,6 +65,10 @@ public class TileEntityTypeRegistry
     @SubscribeEvent
     public static void register( RegistryEvent.Register< TileEntityType< ? > > event )
     {
-        registerTileEntity( event.getRegistry(), Names.TERRIBLE_CHEST, TerribleChestTileEntity::new, null, Blocks.TERRIBLE_CHEST );
+        Supplier< TerribleChestTileEntity > factory = () ->
+            Config.COMMON.useSinglePageMode.get() ? new SinglePageTileEntity()
+                                                  : new MultiPageTileEntity();
+
+        registerTileEntity( event.getRegistry(), Names.TERRIBLE_CHEST, factory, null, Blocks.TERRIBLE_CHEST );
     }
 }

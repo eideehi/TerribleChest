@@ -22,17 +22,22 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.capability;
+package net.eidee.minecraft.terrible_chest.capability.logic;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestItem;
 
-public class Capabilities
+public class SinglePageLogic
+    extends TerribleChestItemsLogic
 {
-    private Capabilities()
+    public SinglePageLogic( Int2ObjectMap< TerribleChestItem > items )
     {
+        super( items );
     }
 
-    @CapabilityInject( TerribleChestItemsCapability.class )
-    public static Capability< TerribleChestItemsCapability > TERRIBLE_CHEST;
+    @Override
+    protected int getInventorySize()
+    {
+        return 133;
+    }
 }

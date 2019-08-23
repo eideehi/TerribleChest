@@ -24,8 +24,12 @@
 
 package net.eidee.minecraft.terrible_chest.registry;
 
+import net.eidee.minecraft.terrible_chest.config.Config;
+import net.eidee.minecraft.terrible_chest.gui.MultiPageScreen;
 import net.eidee.minecraft.terrible_chest.gui.TerribleChestScreen;
+import net.eidee.minecraft.terrible_chest.gui.SinglePageScreen;
 import net.eidee.minecraft.terrible_chest.inventory.container.ContainerTypes;
+import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,6 +40,12 @@ public class ScreenRegistry
 {
     public static void register()
     {
-        ScreenManager.registerFactory( ContainerTypes.TERRIBLE_CHEST, TerribleChestScreen::new );
+        ScreenManager.IScreenFactory< TerribleChestContainer, TerribleChestScreen > factory;
+        factory = ( container, playerInventory, title ) -> {
+            return Config.COMMON.useSinglePageMode.get() ? new SinglePageScreen( container, playerInventory, title )
+                                                         : new MultiPageScreen( container, playerInventory, title );
+        };
+
+        ScreenManager.registerFactory( ContainerTypes.TERRIBLE_CHEST, factory );
     }
 }

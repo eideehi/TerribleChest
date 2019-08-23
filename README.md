@@ -1,4 +1,4 @@
-<img src="https://app.box.com/shared/static/cbpgau8w2td9jwmkjvxpzllwhj19mxqw.png" width="200" alt="Terrible Chest" />
+<img src="https://app.box.com/shared/static/cbpgau8w2td9jwmkjvxpzllwhj19mxqw.png" width="200" alt="Logo - Terrible Chest" />
 
 # Terrible Chest
 ぶっ壊れ性能なチェストを追加するMod
@@ -6,7 +6,7 @@
 Add chest the terrible spec.
 
 ## 概要 / Outline
-<img src="https://app.box.com/shared/static/8je81ugovw06ktmrmqn1fgknq2fblz24.gif" alt="概要 / Outline" />
+<img src="https://app.box.com/shared/static/8je81ugovw06ktmrmqn1fgknq2fblz24.gif" alt="Demo - Outline" />
 
 １ページ２７スロット、１スロットにつき約４３億個収納することができるチェストを追加します。
 さらに、このＭｏｄにより追加されるアイテム「ダイヤモンドスフィア」を消費することで、１ページ分の容量を追加することが可能です。
@@ -16,20 +16,51 @@ Add chest the terrible spec.
 Use 'diamond sphere' for unlock new page.
 It shares content like an Ender Chest.
 
-## レシピ / Recipe
-D = ダイヤモンドブロック / minecraft:diamond_block
+<img src="https://app.box.com/shared/static/qso2piyvor3gdt808pjhb82b1uua0i5d.png" alt="Image - Outline" />
 
-- テリブルチェスト / Terrible Chest<br>
+コンフィグにて設定することで、シングルページモードを利用できます。
+このモードではページを増やすことはできませんが、マルチページモードよりも大きなGUIでアイテムを管理することができます。
+
+You can use single-page mode by setting in the Config.
+This mode does not allow you to add more pages, but you can manage items with a larger GUI than in multi-page mode.
+
+## コンフィグ / Config
+ディレクトリ: .minecraft/config/terrible_chest-common.toml<br>
+Directory: .minecraft/config/terrible_chest-common.toml
+
+- maxPageLimit<br>
+  マルチページモードでの、拡張可能なページの上限を指定します。<br>
+  Specifies the maximum number of pages that can be extended in multi-page mode.
+
+- slotStackLimit<br>
+  １スロットに格納できるアイテム数の上限を指定します。<br>
+  Specifies the maximum number of items that can be stored in a slot.
+
+- useSinglePageMode<br>
+  シングルページモードを使用するかどうかを指定します。<br>
+  Specifies whether to use single-page mode.
+
+## レシピ / Recipe
+D = ダイヤモンドブロック / minecraft:diamond_block<br>
+S = ダイヤモンドスフィア / terrible_chest:diamond_sphere
+
+- テリブルチェスト / Terrible Chest (terrible_chest:terrible_chest)<br>
   "DDD"<br>
   "D D"<br>
   "DDD"<br>
-  <img src="https://app.box.com/shared/static/l6rxw83mc36ik9iuet8seywoa3v53dnj.png" alt="テリブルチェスト / Terrible Chest" />
+  <img src="https://app.box.com/shared/static/l6rxw83mc36ik9iuet8seywoa3v53dnj.png" alt="Recipe - Terrible Chest" />
 
-- ダイヤモンドスフィア / Diamond Sphere<br>
+- ダイヤモンドスフィア / Diamond Sphere (terrible_chest:diamond_sphere)<br>
   " D "<br>
   "DDD"<br>
   " D "<br>
-  <img src="https://app.box.com/shared/static/1mt4nuthpf42gtbd8wmjykw9trxuk6mq.png" alt="ダイヤモンドスフィア / Diamond Sphere" />
+  <img src="https://app.box.com/shared/static/1mt4nuthpf42gtbd8wmjykw9trxuk6mq.png" alt="Recipe - Diamond Sphere" />
+
+- テリブルバングル / Terrible Bangle (terrible_chest:terrible_bangle)<br>
+  " S "<br>
+  "S S"<br>
+  " S "<br>
+  <img src="https://app.box.com/shared/static/ygp19qb5iqjlbx6c8wpti360z9u95fe6.png" alt="Recipe - Terrible Bangle" />
 
 ## GUI操作説明 / GUI Keybinds
 Terrible Chestは「Inventory Tweaks」に対応していませんが、それを補うための機能を実装しています。
@@ -40,27 +71,29 @@ This Mod is not support 'Inventory Tweaks', but to compensate following function
 - アイテムを１個ずつ移動する / Move one by one<br>
   スロットのアイテムを１つずつ、チェストからインベントリ／インベントリからチェストへ直接移動します。<br>
   [CTRL] + [LEFT-CLICK]<br>
-  <img src="https://app.box.com/shared/static/gh2ra72psg7id4rnw9srzmgj3uwzgfvd.gif" alt="アイテムを１つずつ移動する / Move one by one" />
+  <img src="https://app.box.com/shared/static/gh2ra72psg7id4rnw9srzmgj3uwzgfvd.gif" alt="Demo - Move one by one" />
 
 - アイテムを一括で移動する / Move all stack for one item<br>
   スロットのアイテムと同じアイテムのスタックをすべて、チェストからインベントリ／インベントリからチェストへ直接移動します。<br>
   [CTRL] + [SHIFT] + [LEFT-CLICK]<br>
-  <img src="https://app.box.com/shared/static/tqododmh9iusncge56pfhs08zu0d64kt.gif" alt="アイテムを一括で移動する / Move all stack for one item" />
+  <img src="https://app.box.com/shared/static/tqododmh9iusncge56pfhs08zu0d64kt.gif" alt="Demo - Move all stack for one item" />
 
 - スロットを入れ替える / Swap slots<br>
   選択したスロットの中身を入れ替えます<br>
   [ALT] + [LEFT-CLICK]<br>
-  <img src="https://app.box.com/shared/static/al71kqj9o3ij9bvrplg0n3le118472s5.gif" alt="スロットを入れ替える / Swap slots" />
+  <img src="https://app.box.com/shared/static/al71kqj9o3ij9bvrplg0n3le118472s5.gif" alt="Demo - Swap slots" />
 
-## 特殊機能説明 / Extra Feature
-- アイテム収集 / Item collection<br>
-  テリブルチェストの周囲４方向に存在するインベントリを持つブロックから、
-  自身のインベントリに存在するアイテムのみ収集します。<br>
-  <img src="https://app.box.com/shared/static/qxe56u7ujl26on7fgb15vkvk8e8jq09w.gif" alt="アイテム収集 / Item collection" />
+- アイテムをID順でソートする / Sort with id<br>
+  インベントリ内のアイテムをID順で並べ替えます<br>
+  [NUMBER(0-9)]<br>
+  <img src="https://app.box.com/shared/static/qqoi4qsbyvcev8xlhkuo7mqmc74oehmt.gif" alt="Demo - Sort with id" />
 
-- アイテム配送 / Item delivery<br>
-  テリブルチェストがレッドストーン入力を受け付けている間に限り、
-  テリブルチェストの周囲４方向に存在するインベントリを持つブロックへ、
-  各々のインベントリに存在するアイテムのみ配送します。<br>
-  <img src="https://app.box.com/shared/static/oyz9fk1xolivjtobmtp6dpj9ay9d2lls.gif" alt="アイテム配送 / Item delivery" />
+## テリブルバングル / Terrible Bangle
+テリブルバングルを使用することで、テリブルチェストのインベントリに対して特殊な操作を行うことができます。
 
+Using Terrible Bangle, you can perform special operations for Terrible Chest inventory.
+
+- 一括収納 / Item collection<br>
+  対象のインベントリを持つブロックから、テリブルチェストのインベントリへ、一括でアイテムの移動を行います。<br>
+  [SHIFT(SNEAK)] + [RIGHT-CLICK]<br>
+  [![Demo - Item collection](https://app.box.com/shared/static/0ysimm68b6oypkhstk7p1r49sg7tsvol.png)](https://youtu.be/vcEgjA0yTZI)
