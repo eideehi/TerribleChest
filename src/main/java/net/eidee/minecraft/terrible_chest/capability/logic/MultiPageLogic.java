@@ -74,6 +74,6 @@ public class MultiPageLogic
     public void readFromNBT( CompoundNBT nbt )
     {
         super.readFromNBT( nbt );
-        maxPage = nbt.getInt( "MaxPage" );
+        maxPage = Math.max( nbt.getInt( "MaxPage" ), Config.COMMON.resetMaxPage.get() );
     }
 }

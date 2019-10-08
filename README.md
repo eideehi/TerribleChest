@@ -38,7 +38,15 @@ Directory: .minecraft/config/terrible_chest-common.toml
 
 - useSinglePageMode<br>
   シングルページモードを使用するかどうかを指定します。<br>
-  Specifies whether to use single-page mode.
+  シングルページモードからマルチページモードに移行した場合、最大ページ数が０になってしまいます。<br>
+  これを修正するにはresetMaxPageのコンフィグを使用してください。<br>
+  Specifies whether to use single-page mode.<br>
+  If you switch from single-page mode to multi-page mode, the maximum number of pages will be zero.<br>
+  Use the resetMaxPage configuration to correct this.
+
+- resetMaxPage<br>
+  シングルページモードからマルチページモードに切り替えた際に０となってしまう最大ページ数を修正します。<br>
+  Correct the maximum number of pages that will be zero when switching from single-page mode to multi-page mode.
 
 ## レシピ / Recipe
 D = ダイヤモンドブロック / minecraft:diamond_block<br>

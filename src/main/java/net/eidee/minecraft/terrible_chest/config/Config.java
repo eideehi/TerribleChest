@@ -45,10 +45,12 @@ public class Config
         public final ForgeConfigSpec.BooleanValue useSinglePageMode;
         public final ForgeConfigSpec.LongValue slotStackLimit;
         public final ForgeConfigSpec.IntValue maxPageLimit;
+        public final ForgeConfigSpec.IntValue resetMaxPage;
 
         Server( ForgeConfigSpec.Builder builder )
         {
-            builder.comment( "" ).push( "common" );
+            builder.comment( "" )
+                   .push( "common" );
 
             useSinglePageMode = builder.comment( "Use single page mode" )
                                        .translation( "config.terrible_chest.use_single_page_mode" )
@@ -64,6 +66,11 @@ public class Config
                                   .translation( "config.terrible_chest.max_page_limit" )
                                   .worldRestart()
                                   .defineInRange( "maxPageLimit", 79536431, 2, 79536431 );
+
+            resetMaxPage = builder.comment( "*Recovery options* Reset the max page that is 0." )
+                                  .translation( "" )
+                                  .worldRestart()
+                                  .defineInRange( "resetMaxPage", 1, 1, 79536431 );
 
             builder.pop();
         }

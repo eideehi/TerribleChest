@@ -75,7 +75,7 @@ public class TerribleChestItemsCapability
         {
             int index = entry.getIntKey();
             TerribleChestItem item = entry.getValue();
-            if ( item.isNotEmpty() && logic.isValidIndex( index ) )
+            if ( item.isNotEmpty() )
             {
                 CompoundNBT compound = item.serializeNBT();
                 compound.putInt( "Index", index );
@@ -97,9 +97,10 @@ public class TerribleChestItemsCapability
         {
             CompoundNBT compound = list.getCompound( i );
             int index = compound.getInt( "Index" );
-            if ( logic.isValidIndex( index ) )
+            TerribleChestItem item = TerribleChestItem.read( compound );
+            if ( item.isNotEmpty() )
             {
-                items.put( index, TerribleChestItem.read( compound ) );
+                items.put( index, item );
             }
         }
     }
