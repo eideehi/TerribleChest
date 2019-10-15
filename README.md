@@ -91,10 +91,12 @@ This Mod is not support 'Inventory Tweaks', but to compensate following function
   [ALT] + [LEFT-CLICK]<br>
   <img src="https://app.box.com/shared/static/al71kqj9o3ij9bvrplg0n3le118472s5.gif" alt="Demo - Swap slots" />
 
-- アイテムをID順でソートする / Sort with id<br>
-  インベントリ内のアイテムをID順で並べ替えます<br>
-  [NUMBER(0-9)]<br>
-  <img src="https://app.box.com/shared/static/qqoi4qsbyvcev8xlhkuo7mqmc74oehmt.gif" alt="Demo - Sort with id" />
+- アイテムをソートする / Sort<br>
+  インベントリ内のアイテムを並べ替えます<br>
+  - [1(NUMBER)] : ID順 / With ID<br>
+    <img src="https://app.box.com/shared/static/qqoi4qsbyvcev8xlhkuo7mqmc74oehmt.gif" alt="Demo - Sort with id" />
+  - [2(NUMBER)] : 名前順 / With Name<br>
+  - [3(NUMBER)] : アイテム個数順 / With Item Count<br>
 
 ## テリブルバングル / Terrible Bangle
 テリブルバングルを使用することで、テリブルチェストのインベントリに対して特殊な操作を行うことができます。

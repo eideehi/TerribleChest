@@ -166,7 +166,18 @@ public class MultiPageTileEntity
         public void sort( int sortType )
         {
             int offset = getOffset();
-            logic.sort( TerribleChestItemSorters.DEFAULT, offset, offset + getSizeInventory() );
+            if ( sortType == 1 )
+            {
+                logic.sort( TerribleChestItemSorters.DEFAULT_2, offset, offset + getSizeInventory() );
+            }
+            else if ( sortType == 2 )
+            {
+                logic.sort( TerribleChestItemSorters.DEFAULT_3, offset, offset + getSizeInventory() );
+            }
+            else
+            {
+                logic.sort( TerribleChestItemSorters.DEFAULT_1, offset, offset + getSizeInventory() );
+            }
         }
 
         @Override

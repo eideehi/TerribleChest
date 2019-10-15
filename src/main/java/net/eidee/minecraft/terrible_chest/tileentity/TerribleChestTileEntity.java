@@ -35,7 +35,6 @@ import net.eidee.minecraft.terrible_chest.capability.Capabilities;
 import net.eidee.minecraft.terrible_chest.capability.TerribleChestItemsCapability;
 import net.eidee.minecraft.terrible_chest.capability.logic.TerribleChestItemSorters;
 import net.eidee.minecraft.terrible_chest.capability.logic.TerribleChestItemsLogic;
-import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.inventory.ItemHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -174,7 +173,18 @@ public abstract class TerribleChestTileEntity< LOGIC extends TerribleChestItemsL
 
         public void sort( int sortType )
         {
-            logic.sort( TerribleChestItemSorters.DEFAULT, 0, getSizeInventory() );
+            if ( sortType == 1 )
+            {
+                logic.sort( TerribleChestItemSorters.DEFAULT_2, 0, getSizeInventory() );
+            }
+            else if ( sortType == 2 )
+            {
+                logic.sort( TerribleChestItemSorters.DEFAULT_3, 0, getSizeInventory() );
+            }
+            else
+            {
+                logic.sort( TerribleChestItemSorters.DEFAULT_1, 0, getSizeInventory() );
+            }
         }
 
         @Override

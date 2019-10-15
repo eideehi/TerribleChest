@@ -32,17 +32,23 @@ import net.minecraft.util.ResourceLocation;
 
 public class TerribleChestItemSorters
 {
-    public static final Comparator< TerribleChestItem > DEFAULT;
+    public static final Comparator< TerribleChestItem > DEFAULT_1;
 
-    public static final Comparator< TerribleChestItem > ITEM_NAME;
+    public static final Comparator< TerribleChestItem > DEFAULT_2;
+
+    public static final Comparator< TerribleChestItem > DEFAULT_3;
+
+    public static final Comparator< TerribleChestItem > ITEM_REGISTRY_NAME;
 
     public static final Comparator< TerribleChestItem > ITEM_COUNT;
 
     public static final Comparator< TerribleChestItem > MOD_ID;
 
+    public static final Comparator< TerribleChestItem > ITEM_NAME;
+
     static
     {
-        ITEM_NAME = ( item1, item2 ) -> {
+        ITEM_REGISTRY_NAME = ( item1, item2 ) -> {
             ResourceLocation registryName1 = item1.getStack().getItem().getRegistryName();
             ResourceLocation registryName2 = item2.getStack().getItem().getRegistryName();
             if ( registryName1 != null && registryName2 != null )
@@ -55,9 +61,7 @@ public class TerribleChestItemSorters
             }
             return registryName1 == null ? 1 : -1;
         };
-        ITEM_COUNT = ( item1, item2 ) -> {
-            return Integer.compare( item1.getCount(), item2.getCount() );
-        };
+        ITEM_COUNT = Comparator.comparingInt( TerribleChestItem::getCount );
         MOD_ID = ( item1, item2 ) -> {
             ResourceLocation registryName1 = item1.getStack().getItem().getRegistryName();
             ResourceLocation registryName2 = item2.getStack().getItem().getRegistryName();
@@ -71,6 +75,13 @@ public class TerribleChestItemSorters
             }
             return registryName1 == null ? 1 : -1;
         };
-        DEFAULT = ITEM_NAME.thenComparing( MOD_ID ).thenComparing( ITEM_COUNT.reversed() );
+        ITEM_NAME = ( item1, item2 ) -> {
+            String name1 = item1.getStack().getTextComponent().getFormattedText();
+            String name2 = item2.getStack().getTextComponent().getFormattedText();
+            return name1.compareTo( name2 );
+        };
+        DEFAULT_1 = ITEM_REGISTRY_NAME.thenComparing( MOD_ID ).thenComparing( ITEM_COUNT.reversed() );
+        DEFAULT_2 = ITEM_NAME.thenComparing( ITEM_COUNT.reversed() );
+        DEFAULT_3 = ITEM_COUNT.reversed().thenComparing( ITEM_NAME );
     }
 }
