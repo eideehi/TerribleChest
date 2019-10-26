@@ -1,16 +1,21 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/terrible-chest",
   "promos": {
-    "1.14.4-latest": "1.14.4-1",
-    "1.14.4-recommended": "1.14.4-1",
+    "1.14.4-latest": "1.14.4-5",
+    "1.14.4-recommended": "1.14.4-2",
     "1.12.2-latest": "1.12.2-2",
     "1.12.2-recommended": "1.12.2-2"
   },
   "1.14.4": {
-    "1.14.4-1": "新規公開 / New release"
+    "1.14.4-1": "新規公開 / New release",
+    "1.14.4-2": "ページを跨いでスロット入れ替えできるように改修 / Fix so that slots can be swap across pages.",
+    "1.14.4-3": "コンフィグの項目と機能追加 / Add configuration and features.",
+    "1.14.4-4": "バグフィックスとコンフィグの項目追加 / Bug fix and add configuration.",
+    "1.14.4-5": "ソートの種類を追加 / Add sort types."
   },
   "1.12.2": {
     "1.12.2-1": "1.12.2に対応 / MC1.12.2 Supported",
-    "1.12.2-2": "ページを跨いでスロット入れ替えできるように改修 / Fix so that slots can be swap across pages."
+    "1.12.2-2": "ページを跨いでスロット入れ替えできるように改修 / Fix so that slots can be swap across pages.",
+    "1.12.2-3": "ホッパー等、外部インベントリ操作を受け付けるように改修 / Change to accept external inventory operations such as hoppers."
   }
 }

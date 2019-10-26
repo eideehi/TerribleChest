@@ -28,12 +28,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import net.eidee.minecraft.terrible_chest.init.CommonProxy;
 
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod( modid = TerribleChest.MOD_ID, version = TerribleChest.VERSION, name = TerribleChest.NAME )
+@Mod( modid = TerribleChest.MOD_ID,
+      version = TerribleChest.VERSION,
+      name = TerribleChest.NAME,
+      guiFactory = "net.eidee.minecraft.terrible_chest.config.TerribleChestGuiFactory" )
 public class TerribleChest
 {
     private static final Logger logger;
@@ -58,6 +64,12 @@ public class TerribleChest
     public static Logger logger()
     {
         return logger;
+    }
+
+    @Mod.EventHandler
+    public void construction( FMLConstructionEvent event )
+    {
+        ConfigManager.load( MOD_ID, Config.Type.INSTANCE );
     }
 
     @Mod.EventHandler

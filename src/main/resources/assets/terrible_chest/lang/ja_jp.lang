@@ -2,3 +2,6 @@ tile.terrible_chest.terrible_chest.name=テリブルチェスト
 item.terrible_chest.diamond_sphere.name=ダイヤモンドスフィア
 container.terrible_chest.terrible_chest=テリブルチェスト
 gui.terrible_chest.terrible_chest.count=個数: %,d
+terrible_chest.config.config_title=Terrible Chest コンフィグ
+terrible_chest.config.use_itemhandler_capability=ItemHandlerのケイパビリティを有効化
+terrible_chest.config.stop_item_collection_and_deliver=アイテム収集と配送の停止

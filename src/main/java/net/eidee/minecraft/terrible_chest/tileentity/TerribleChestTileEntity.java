@@ -33,6 +33,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.common.collect.Lists;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
+import net.eidee.minecraft.terrible_chest.config.Config;
+import net.eidee.minecraft.terrible_chest.inventory.ItemHandler;
 import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 
@@ -49,6 +51,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -231,6 +234,21 @@ public class TerribleChestTileEntity
         }
     }
 
+    @Nullable
+    private TerribleChestInventory getTerribleChestInventory()
+    {
+        if ( ownerId != null )
+        {
+            World world = Objects.requireNonNull( getWorld() );
+            EntityPlayer owner = world.getPlayerEntityByUUID( ownerId );
+            if ( owner != null )
+            {
+                return owner.getCapability( Capabilities.TERRIBLE_CHEST, null );
+            }
+        }
+        return null;
+    }
+
     public void setOwnerId( UUID ownerId )
     {
         this.ownerId = ownerId;
@@ -261,13 +279,12 @@ public class TerribleChestTileEntity
     @Override
     public void update()
     {
-        World world = Objects.requireNonNull( getWorld() );
-        if ( !world.isRemote && ownerId != null )
+        if ( !Config.stopItemCollectionAndDeliver )
         {
-            EntityPlayer owner = world.getPlayerEntityByUUID( ownerId );
-            if ( owner != null )
+            World world = Objects.requireNonNull( getWorld() );
+            if ( !world.isRemote )
             {
-                TerribleChestInventory inventory = owner.getCapability( Capabilities.TERRIBLE_CHEST, null );
+                TerribleChestInventory inventory = getTerribleChestInventory();
                 if ( inventory != null )
                 {
                     if ( world.isBlockPowered( getPos() ) )
@@ -301,6 +318,33 @@ public class TerribleChestTileEntity
         }
         compound.setInteger( "Page", page );
         return compound;
+    }
+
+    @Override
+    public boolean hasCapability( Capability< ? > capability, @Nullable EnumFacing facing )
+    {
+        if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && Config.useItemHandlerCapability )
+        {
+            TerribleChestInventory inventory = getTerribleChestInventory();
+            return inventory != null;
+        }
+        return super.hasCapability( capability, facing );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    @Nullable
+    @Override
+    public < T > T getCapability( Capability< T > capability, @Nullable EnumFacing facing )
+    {
+        if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && Config.useItemHandlerCapability )
+        {
+            TerribleChestInventory inventory = getTerribleChestInventory();
+            if ( inventory != null )
+            {
+                return ( T )new ItemHandler( inventory );
+            }
+        }
+        return super.getCapability( capability, facing );
     }
 
     private static class Inventory
