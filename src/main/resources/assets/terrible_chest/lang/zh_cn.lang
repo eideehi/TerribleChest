@@ -1,0 +1,7 @@
+tile.terrible_chest.terrible_chest.name=可怕的箱子
+item.terrible_chest.diamond_sphere.name=钻石球
+container.terrible_chest.terrible_chest=可怕的手镯
+gui.terrible_chest.terrible_chest.count=数量: %,d
+terrible_chest.config.config_title=Terrible Chest 配置文件
+terrible_chest.config.use_itemhandler_capability=启用 ItemHandler capability
+terrible_chest.config.stop_item_collection_and_deliver=停止物品收集和传输
