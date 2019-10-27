@@ -107,3 +107,9 @@ Using Terrible Bangle, you can perform special operations for Terrible Chest inv
   対象のインベントリを持つブロックから、テリブルチェストのインベントリへ、一括でアイテムの移動を行います。<br>
   [SHIFT(SNEAK)] + [RIGHT-CLICK]<br>
   [![Demo - Item collection](https://app.box.com/shared/static/0ysimm68b6oypkhstk7p1r49sg7tsvol.png)](https://youtu.be/vcEgjA0yTZI)
+
+## クレジット / Credits
+言語ファイル提供者 / Language file provider:
+
+zh_cn:
+Aikini

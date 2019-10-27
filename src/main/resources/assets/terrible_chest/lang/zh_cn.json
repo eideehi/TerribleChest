@@ -1,0 +1,14 @@
+{
+  "_comment": "Blocks",
+  "block.terrible_chest.terrible_chest": "可怕的箱子",
+
+  "_comment": "Items",
+  "item.terrible_chest.diamond_sphere": "钻石球",
+  "item.terrible_chest.terrible_bangle": "可怕的手镯",
+
+  "_comment": "Container",
+  "container.terrible_chest.terrible_chest": "可怕的箱子",
+
+  "_comment": "Gui",
+  "gui.terrible_chest.terrible_chest.count": "数量: %,d"
+}
