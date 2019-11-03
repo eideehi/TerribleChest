@@ -37,6 +37,16 @@ public class Config
     @net.minecraftforge.common.config.Config.LangKey( "terrible_chest.config.stop_item_collection_and_deliver" )
     public static boolean stopItemCollectionAndDeliver;
 
+    @net.minecraftforge.common.config.Config.Comment( "Maximum page limit" )
+    @net.minecraftforge.common.config.Config.LangKey( "terrible_chest.config.maxPageLimit" )
+    @net.minecraftforge.common.config.Config.RangeInt( min = 1 )
+    public static int maxPageLimit = Integer.MAX_VALUE;
+
+    @net.minecraftforge.common.config.Config.Comment( "Stack size limit of slot" )
+    @net.minecraftforge.common.config.Config.LangKey( "terrible_chest.config.slotStackLimit" )
+    @net.minecraftforge.common.config.Config.RangeInt
+    public static int slotStackLimit = -1;
+
     private Config()
     {
     }

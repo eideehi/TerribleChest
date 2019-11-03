@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import mcp.MethodsReturnNonnullByDefault;
+import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.item.Items;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 import net.eidee.minecraft.terrible_chest.util.IntUtil;
@@ -108,9 +109,12 @@ public class TerribleChestContainer
         ItemStack stack = unlockInventory.getStackInSlot( 0 );
         if ( !stack.isEmpty() && stack.getItem() == Items.DIAMOND_SPHERE )
         {
-            stack.shrink( 1 );
             int maxPage = inventory.getField( TerribleChestTileEntity.DATA_MAX_PAGE );
-            inventory.setField( TerribleChestTileEntity.DATA_MAX_PAGE, maxPage + 1 );
+            if ( maxPage < Config.maxPageLimit )
+            {
+                stack.shrink( 1 );
+                inventory.setField( TerribleChestTileEntity.DATA_MAX_PAGE, maxPage + 1 );
+            }
         }
     }
 
@@ -224,7 +228,7 @@ public class TerribleChestContainer
                 if ( index < 27 )
                 {
                     int count = inventory.getField( index );
-                    int limit = -1 - count;
+                    int limit = Config.slotStackLimit - count;
                     if ( limit != 0 )
                     {
                         int size = IntUtil.minUnsigned( stack.getCount(), limit );
@@ -408,7 +412,7 @@ public class TerribleChestContainer
                         else if ( ItemHandlerHelper.canItemStacksStack( stack, stackInSlot ) )
                         {
                             int count = inventory.getField( slotId );
-                            if ( count != -1 )
+                            if ( Integer.compareUnsigned( Config.slotStackLimit, 0 ) > 0 )
                             {
                                 stack.shrink( 1 );
                                 inventory.setField( slotId, count + 1 );

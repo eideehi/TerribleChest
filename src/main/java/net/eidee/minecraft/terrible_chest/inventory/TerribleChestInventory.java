@@ -29,6 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.MethodsReturnNonnullByDefault;
+import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.util.IntUtil;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,7 +65,7 @@ public class TerribleChestInventory
 
     public int getMaxPage()
     {
-        return maxPage;
+        return Math.min( maxPage, Config.maxPageLimit );
     }
 
     public void setMaxPage( int maxPage )
@@ -110,7 +111,7 @@ public class TerribleChestInventory
     @Override
     public int getSizeInventory()
     {
-        return maxPage * 27;
+        return getMaxPage() * 27;
     }
 
     @Override
@@ -237,19 +238,17 @@ public class TerribleChestInventory
         {
             NBTTagCompound compound = list.getCompoundTagAt( i );
             int index = compound.getInteger( "Index" );
-            if ( isValidIndex( index ) )
-            {
-                ItemStack stack = new ItemStack( compound.getCompoundTag( "Stack" ) );
-                int count = compound.getInteger( "Count" );
-                items.put( index, new Item( stack, count ) );
-            }
+            ItemStack stack = new ItemStack( compound.getCompoundTag( "Stack" ) );
+            int count = compound.getInteger( "Count" );
+
+            items.put( index, new Item( stack, count ) );
         }
     }
 
     @Override
     public int getInventoryStackLimit()
     {
-        return Integer.MAX_VALUE;
+        return Config.slotStackLimit < 0 ? Integer.MAX_VALUE : Config.slotStackLimit;
     }
 
     @Override

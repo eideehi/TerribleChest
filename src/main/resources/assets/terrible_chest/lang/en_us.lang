@@ -5,3 +5,5 @@ gui.terrible_chest.terrible_chest.count=Count: %,d
 terrible_chest.config.config_title=Terrible Chest Config
 terrible_chest.config.use_itemhandler_capability=Enable ItemHandler capability
 terrible_chest.config.stop_item_collection_and_deliver=Stop item collection and deliver
+terrible_chest.config.maxPageLimit=Maximum page limit
+terrible_chest.config.slotStackLimit=Stack size limit of slot

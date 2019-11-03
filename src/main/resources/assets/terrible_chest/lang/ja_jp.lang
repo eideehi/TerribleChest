@@ -5,3 +5,5 @@ gui.terrible_chest.terrible_chest.count=個数: %,d
 terrible_chest.config.config_title=Terrible Chest コンフィグ
 terrible_chest.config.use_itemhandler_capability=ItemHandlerのケイパビリティを有効化
 terrible_chest.config.stop_item_collection_and_deliver=アイテム収集と配送の停止
+terrible_chest.config.maxPageLimit=最大ページ数
+terrible_chest.config.slotStackLimit=スロットあたりの最大容量
