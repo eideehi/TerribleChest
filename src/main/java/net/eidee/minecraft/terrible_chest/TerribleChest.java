@@ -27,12 +27,14 @@ package net.eidee.minecraft.terrible_chest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import net.eidee.minecraft.terrible_chest.config.Config;
+import net.eidee.minecraft.terrible_chest.config.KeyBindings;
 import net.eidee.minecraft.terrible_chest.network.Networks;
 import net.eidee.minecraft.terrible_chest.registry.CapabilityRegistry;
 import net.eidee.minecraft.terrible_chest.registry.MessageRegistry;
 import net.eidee.minecraft.terrible_chest.registry.ScreenRegistry;
 
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -73,5 +75,6 @@ public class TerribleChest
     private void clientSetup( FMLClientSetupEvent event )
     {
         ScreenRegistry.register();
+        KeyBindings.getAll().forEach( ClientRegistry::registerKeyBinding );
     }
 }

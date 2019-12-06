@@ -31,23 +31,23 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class Config
 {
     public static final ForgeConfigSpec COMMON_SPEC;
-    public static final Server COMMON;
+    public static final Common COMMON;
 
     static
     {
-        Pair< Server, ForgeConfigSpec > server = new ForgeConfigSpec.Builder().configure( Server::new );
-        COMMON_SPEC = server.getRight();
-        COMMON = server.getLeft();
+        Pair< Common, ForgeConfigSpec > common = new ForgeConfigSpec.Builder().configure( Common::new );
+        COMMON_SPEC = common.getRight();
+        COMMON = common.getLeft();
     }
 
-    public static final class Server
+    public static final class Common
     {
         public final ForgeConfigSpec.BooleanValue useSinglePageMode;
         public final ForgeConfigSpec.LongValue slotStackLimit;
         public final ForgeConfigSpec.IntValue maxPageLimit;
         public final ForgeConfigSpec.IntValue resetMaxPage;
 
-        Server( ForgeConfigSpec.Builder builder )
+        Common( ForgeConfigSpec.Builder builder )
         {
             builder.comment( "" )
                    .push( "common" );
