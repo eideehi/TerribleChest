@@ -10,5 +10,18 @@
   "container.terrible_chest.terrible_chest": "可怕的箱子",
 
   "_comment": "Gui",
-  "gui.terrible_chest.terrible_chest.count": "数量: %,d"
+  "gui.terrible_chest.terrible_chest.count": "数量: %,d",
+
+  "_comment": "Key Bindings",
+  "key.terrible_chest": "可怕的箱子",
+  "key.terrible_chest.sort0": "排序 0",
+  "key.terrible_chest.sort1": "排序 1",
+  "key.terrible_chest.sort2": "排序 2",
+  "key.terrible_chest.sort3": "排序 3",
+  "key.terrible_chest.sort4": "排序 4",
+  "key.terrible_chest.sort5": "排序 5",
+  "key.terrible_chest.sort6": "排序 6",
+  "key.terrible_chest.sort7": "排序 7",
+  "key.terrible_chest.sort8": "排序 8",
+  "key.terrible_chest.sort9": "排序 9"
 }

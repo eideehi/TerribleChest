@@ -295,7 +295,6 @@ public abstract class TerribleChestContainer
     @Override
     public ItemStack slotClick( int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player )
     {
-        // logger().debug( "slotId={}, click={}, drag={}", slotId, clickTypeIn, dragType );
         if ( slotId >= 0 && slotId < chestInventory.getSizeInventory() )
         { // チェストのスロットがクリックされた
             PlayerInventory playerInventory = player.inventory;
@@ -473,12 +472,12 @@ public abstract class TerribleChestContainer
                     return ItemStack.EMPTY;
                 }
             }
-            else if ( clickTypeIn == ClickType.SWAP )
+            else if ( clickTypeIn == ClickType.CLONE )
             { // 独自イベント処理 [ソート]
                 sortInventory( dragType );
                 return ItemStack.EMPTY;
             }
-            else if ( clickTypeIn == ClickType.CLONE ||
+            else if ( clickTypeIn == ClickType.SWAP ||
                       clickTypeIn == ClickType.PICKUP_ALL ||
                       clickTypeIn == ClickType.QUICK_CRAFT )
             {

@@ -28,12 +28,16 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import io.netty.util.collection.IntObjectHashMap;
+import io.netty.util.collection.IntObjectMap;
 import mcp.MethodsReturnNonnullByDefault;
+import net.eidee.minecraft.terrible_chest.config.KeyBindings;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
@@ -47,6 +51,24 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public abstract class TerribleChestScreen
     extends ContainerScreen< TerribleChestContainer >
 {
+    private static final IntObjectMap< KeyBinding > sortKeys;
+
+    static
+    {
+        IntObjectHashMap< KeyBinding > map = new IntObjectHashMap<>();
+        map.put( 0, KeyBindings.SORT_0 );
+        map.put( 1, KeyBindings.SORT_1 );
+        map.put( 2, KeyBindings.SORT_2 );
+        map.put( 3, KeyBindings.SORT_3 );
+        map.put( 4, KeyBindings.SORT_4 );
+        map.put( 5, KeyBindings.SORT_5 );
+        map.put( 6, KeyBindings.SORT_6 );
+        map.put( 7, KeyBindings.SORT_7 );
+        map.put( 8, KeyBindings.SORT_8 );
+        map.put( 9, KeyBindings.SORT_9 );
+        sortKeys = map;
+    }
+
     public TerribleChestScreen( TerribleChestContainer container,
                                 PlayerInventory playerInventory,
                                 ITextComponent title )
@@ -59,7 +81,10 @@ public abstract class TerribleChestScreen
     {
         if ( type == ClickType.PICKUP && mouseButton == 0 )
         {
-            if ( slotId >= 0 && slotId < container.getChestInventory().getSizeInventory() )
+            if ( slotId >= 0 &&
+                 slotId <
+                 container.getChestInventory()
+                          .getSizeInventory() )
             {
                 if ( hasAltDown() )
                 {
@@ -72,8 +97,9 @@ public abstract class TerribleChestScreen
                     return;
                 }
             }
-            else if ( slotId >= container.getChestInventory().getSizeInventory() &&
-                      slotId < container.getTotalSlotSize() )
+            else if ( slotId >=
+                      container.getChestInventory()
+                               .getSizeInventory() && slotId < container.getTotalSlotSize() )
             {
                 if ( hasControlDown() )
                 {
@@ -93,7 +119,28 @@ public abstract class TerribleChestScreen
                 }
             }
         }
+        else if ( type == ClickType.CLONE )
+        {
+            super.handleMouseClick( slotIn, slotId, 1, type );
+            return;
+        }
         super.handleMouseClick( slotIn, slotId, mouseButton, type );
+    }
+
+    @Override
+    public boolean keyPressed( int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_ )
+    {
+        Iterable< IntObjectMap.PrimitiveEntry< KeyBinding > > entries = sortKeys.entries();
+        for ( IntObjectMap.PrimitiveEntry< KeyBinding > entry : entries )
+        {
+            KeyBinding keyBinding = entry.value();
+            if ( keyBinding.matchesKey( p_keyPressed_1_, p_keyPressed_2_ ) )
+            {
+                super.handleMouseClick( null, 0, entry.key(), ClickType.CLONE );
+                return true;
+            }
+        }
+        return super.keyPressed( p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_ );
     }
 
     @Override

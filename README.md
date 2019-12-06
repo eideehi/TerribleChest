@@ -28,25 +28,12 @@ This mode does not allow you to add more pages, but you can manage items with a 
 ディレクトリ: .minecraft/config/terrible_chest-common.toml<br>
 Directory: .minecraft/config/terrible_chest-common.toml
 
-- maxPageLimit<br>
-  マルチページモードでの、拡張可能なページの上限を指定します。<br>
-  Specifies the maximum number of pages that can be extended in multi-page mode.
-
-- slotStackLimit<br>
-  １スロットに格納できるアイテム数の上限を指定します。<br>
-  Specifies the maximum number of items that can be stored in a slot.
-
-- useSinglePageMode<br>
-  シングルページモードを使用するかどうかを指定します。<br>
-  シングルページモードからマルチページモードに移行した場合、最大ページ数が０になってしまいます。<br>
-  これを修正するにはresetMaxPageのコンフィグを使用してください。<br>
-  Specifies whether to use single-page mode.<br>
-  If you switch from single-page mode to multi-page mode, the maximum number of pages will be zero.<br>
-  Use the resetMaxPage configuration to correct this.
-
-- resetMaxPage<br>
-  シングルページモードからマルチページモードに切り替えた際に０となってしまう最大ページ数を修正します。<br>
-  Correct the maximum number of pages that will be zero when switching from single-page mode to multi-page mode.
+|Property|Description|
+|--------|-----------|
+|maxPageLimit|マルチページモードでの、拡張可能なページの上限を指定します。<br>Specifies the maximum number of pages that can be extended in multi-page mode.|
+|slotStackLimit|１スロットに格納できるアイテム数の上限を指定します。<br>Specifies the maximum number of items that can be stored in a slot.|
+|useSinglePageMode|シングルページモードを使用するかどうかを指定します。シングルページモードからマルチページモードに移行した場合、最大ページ数が０になってしまいます。これを修正するにはresetMaxPageのコンフィグを使用してください。<br>Specifies whether to use single-page mode. If you switch from single-page mode to multi-page mode, the maximum number of pages will be zero. Use the resetMaxPage configuration to correct this.|
+|resetMaxPage|シングルページモードからマルチページモードに切り替えた際に０となってしまう最大ページ数を修正します。<br>Correct the maximum number of pages that will be zero when switching from single-page mode to multi-page mode.|
 
 ## レシピ / Recipe
 D = ダイヤモンドブロック / minecraft:diamond_block<br>
@@ -93,10 +80,12 @@ This Mod is not support 'Inventory Tweaks', but to compensate following function
 
 - アイテムをソートする / Sort<br>
   インベントリ内のアイテムを並べ替えます<br>
-  - [1(NUMBER)] : ID順 / With ID<br>
-    <img src="https://app.box.com/shared/static/qqoi4qsbyvcev8xlhkuo7mqmc74oehmt.gif" alt="Demo - Sort with id" />
-  - [2(NUMBER)] : 名前順 / With Name<br>
-  - [3(NUMBER)] : アイテム個数順 / With Item Count<br>
+    - [1(NUMBER)] : ID順 / With ID<br>
+      <img src="https://app.box.com/shared/static/qqoi4qsbyvcev8xlhkuo7mqmc74oehmt.gif" alt="Demo - Sort with id" />
+    - [2(NUMBER)] : 名前順 / With Name<br>
+    - [3(NUMBER)] : アイテム個数順 / With Item Count<br>
+  これらのキーはMinecraftのコントロール設定から変更することが可能です。
+  <img src="https://app.box.com/shared/static/suw40dxj5zueh619kdm5jc6djhtdgcut.png" alt="Demo - Controls" />
 
 ## テリブルバングル / Terrible Bangle
 テリブルバングルを使用することで、テリブルチェストのインベントリに対して特殊な操作を行うことができます。
@@ -109,7 +98,8 @@ Using Terrible Bangle, you can perform special operations for Terrible Chest inv
   [![Demo - Item collection](https://app.box.com/shared/static/0ysimm68b6oypkhstk7p1r49sg7tsvol.png)](https://youtu.be/vcEgjA0yTZI)
 
 ## クレジット / Credits
-言語ファイル提供者 / Language file provider:
 
-zh_cn:
-Aikini
+#### 翻訳協力者 / Translators:
+|Language|Translators|
+|--------|-----------|
+|zh_cn|Aikini|

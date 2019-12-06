@@ -10,5 +10,18 @@
   "container.terrible_chest.terrible_chest": "テリブルチェスト",
 
   "_comment": "Gui",
-  "gui.terrible_chest.terrible_chest.count": "個数: %,d"
+  "gui.terrible_chest.terrible_chest.count": "個数: %,d",
+
+  "_comment": "Key Bindings",
+  "key.terrible_chest": "テリブルチェスト",
+  "key.terrible_chest.sort0": "ソート 0",
+  "key.terrible_chest.sort1": "ソート 1",
+  "key.terrible_chest.sort2": "ソート 2",
+  "key.terrible_chest.sort3": "ソート 3",
+  "key.terrible_chest.sort4": "ソート 4",
+  "key.terrible_chest.sort5": "ソート 5",
+  "key.terrible_chest.sort6": "ソート 6",
+  "key.terrible_chest.sort7": "ソート 7",
+  "key.terrible_chest.sort8": "ソート 8",
+  "key.terrible_chest.sort9": "ソート 9"
 }
