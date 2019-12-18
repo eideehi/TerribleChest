@@ -31,9 +31,13 @@ import net.eidee.minecraft.terrible_chest.constants.Names;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -51,7 +55,8 @@ public class BlockRegistry
         Block.Properties prop;
         {
             prop = Block.Properties.create( Material.IRON )
-                                   .hardnessAndResistance( 3.0F );
+                                   .hardnessAndResistance( 3.0F )
+                                   .doesNotBlockMovement();
             block = new TerribleChestBlock( prop ).setRegistryName( Names.TERRIBLE_CHEST );
             registry.register( block );
         }
@@ -70,5 +75,11 @@ public class BlockRegistry
             item = new BlockItem( Blocks.TERRIBLE_CHEST, prop ).setRegistryName( Names.TERRIBLE_CHEST );
             registry.register( item );
         }
+    }
+
+    @OnlyIn( Dist.CLIENT )
+    public static void renderTypeRegister()
+    {
+        RenderTypeLookup.setRenderLayer( Blocks.TERRIBLE_CHEST, RenderType.func_228643_e_() );
     }
 }

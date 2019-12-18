@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.config.KeyBindings;
 import net.eidee.minecraft.terrible_chest.network.Networks;
+import net.eidee.minecraft.terrible_chest.registry.BlockRegistry;
 import net.eidee.minecraft.terrible_chest.registry.CapabilityRegistry;
 import net.eidee.minecraft.terrible_chest.registry.MessageRegistry;
 import net.eidee.minecraft.terrible_chest.registry.ScreenRegistry;
@@ -76,5 +77,6 @@ public class TerribleChest
     {
         ScreenRegistry.register();
         KeyBindings.getAll().forEach( ClientRegistry::registerKeyBinding );
+        BlockRegistry.renderTypeRegister();
     }
 }

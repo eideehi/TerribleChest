@@ -29,7 +29,7 @@ import static net.eidee.minecraft.terrible_chest.TerribleChest.MOD_ID;
 import java.util.Objects;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.inventory.container.MultiPageContainer;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
@@ -60,9 +60,7 @@ public class MultiPageScreen
 
     private MultiPageContainer container;
 
-    public MultiPageScreen( TerribleChestContainer screenContainer,
-                            PlayerInventory inv,
-                            ITextComponent titleIn )
+    public MultiPageScreen( TerribleChestContainer screenContainer, PlayerInventory inv, ITextComponent titleIn )
     {
         super( screenContainer, inv, titleIn );
         this.container = ( MultiPageContainer )screenContainer;
@@ -104,7 +102,7 @@ public class MultiPageScreen
     @Override
     protected void drawGuiContainerBackgroundLayer( float partialTicks, int mouseX, int mouseY )
     {
-        GlStateManager.color4f( 1.0F, 1.0F, 1.0F, 1.0F );
+        RenderSystem.color4f( 1.0F, 1.0F, 1.0F, 1.0F );
         Objects.requireNonNull( minecraft ).getTextureManager().bindTexture( GUI_TEXTURE );
         blit( guiLeft, guiTop, 0, 0, xSize, ySize );
 
@@ -115,15 +113,15 @@ public class MultiPageScreen
             if ( swapTarget >= 0 && swapTarget < 27 )
             {
                 Slot slot = container.getSlot( swapTarget );
-                GlStateManager.disableLighting();
-                GlStateManager.disableDepthTest();
+                RenderSystem.disableLighting();
+                RenderSystem.disableDepthTest();
                 int x = guiLeft + slot.xPos;
                 int y = guiTop + slot.yPos;
-                GlStateManager.colorMask( true, true, true, false );
+                RenderSystem.colorMask( true, true, true, false );
                 fillGradient( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
-                GlStateManager.colorMask( true, true, true, true );
-                GlStateManager.enableLighting();
-                GlStateManager.enableDepthTest();
+                RenderSystem.colorMask( true, true, true, true );
+                RenderSystem.enableLighting();
+                RenderSystem.enableDepthTest();
             }
         }
     }
