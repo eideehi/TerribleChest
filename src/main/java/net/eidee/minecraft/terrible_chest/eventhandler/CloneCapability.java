@@ -42,7 +42,7 @@ public class CloneCapability
         original.revive();
         original.getCapability( Capabilities.TERRIBLE_CHEST )
                 .ifPresent( inventory -> {
-                    PlayerEntity clone = event.getEntityPlayer();
+                    PlayerEntity clone = event.getPlayer();
                     clone.getCapability( Capabilities.TERRIBLE_CHEST )
                          .ifPresent( cloneInventory -> {
                              cloneInventory.deserializeNBT( inventory.serializeNBT() );
