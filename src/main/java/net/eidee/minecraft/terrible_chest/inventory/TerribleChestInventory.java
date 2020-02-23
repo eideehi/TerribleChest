@@ -38,6 +38,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -106,6 +107,184 @@ public class TerribleChestInventory
         {
             items.put( index2, item1 );
         }
+    }
+
+    public IInventory createInventory()
+    {
+        return new IInventory()
+        {
+            @Override
+            public int getSizeInventory()
+            {
+                return TerribleChestInventory.this.getSizeInventory();
+            }
+
+            @Override
+            public boolean isEmpty()
+            {
+                for ( int i = 0; i < getSizeInventory(); i++ )
+                {
+                    if ( items.getOrDefault( i, Item.EMPTY ).isNotEmpty() )
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public ItemStack getStackInSlot( int index )
+            {
+                Item item = items.getOrDefault( index, Item.EMPTY );
+                if ( item.isNotEmpty() )
+                {
+                    int itemCount = item.getCount();
+                    int size = IntUtil.minUnsigned( getInventoryStackLimit(), itemCount );
+                    return ItemHandlerHelper.copyStackWithSize( item.getStack(), size );
+                }
+                return ItemStack.EMPTY;
+            }
+
+            @Override
+            public ItemStack decrStackSize( int index, int count )
+            {
+                if ( count > 0 && isValidIndex( index ) )
+                {
+                    Item item = items.getOrDefault( index, Item.EMPTY );
+                    if ( item.isNotEmpty() )
+                    {
+                        ItemStack stack = item.getStack();
+                        int itemCount = item.getCount();
+                        int _count = IntUtil.minUnsigned( count, itemCount );
+                        if ( _count == itemCount )
+                        {
+                            items.remove( index );
+                        }
+                        item.setCount( itemCount - _count );
+                        markDirty();
+                        return ItemHandlerHelper.copyStackWithSize( stack, _count );
+                    }
+                }
+                return ItemStack.EMPTY;
+            }
+
+            @Override
+            public ItemStack removeStackFromSlot( int index )
+            {
+                if ( isValidIndex( index ) )
+                {
+                    Item item = items.remove( index );
+                    if ( item != null )
+                    {
+                        ItemStack stack = item.getStack();
+                        int size = IntUtil.minUnsigned( stack.getMaxStackSize(), item.getCount() );
+                        markDirty();
+                        return ItemHandlerHelper.copyStackWithSize( stack, size );
+                    }
+                }
+                return ItemStack.EMPTY;
+            }
+
+            @Override
+            public void setInventorySlotContents( int index, ItemStack stack )
+            {
+                if ( isValidIndex( index ) )
+                {
+                    if ( stack.isEmpty() )
+                    {
+                        Item item = items.remove( index );
+                        if ( item != null )
+                        {
+                            markDirty();
+                        }
+                    }
+                    else
+                    {
+                        Item item = new Item( stack );
+                        items.put( index, item );
+                        markDirty();
+                    }
+                }
+            }
+
+            @Override
+            public int getInventoryStackLimit()
+            {
+                return TerribleChestInventory.this.getInventoryStackLimit();
+            }
+
+            @Override
+            public void markDirty()
+            {
+
+            }
+
+            @Override
+            public boolean isUsableByPlayer( EntityPlayer player )
+            {
+                return true;
+            }
+
+            @Override
+            public void openInventory( EntityPlayer player )
+            {
+
+            }
+
+            @Override
+            public void closeInventory( EntityPlayer player )
+            {
+
+            }
+
+            @Override
+            public boolean isItemValidForSlot( int index, ItemStack stack )
+            {
+                return true;
+            }
+
+            @Override
+            public int getField( int id )
+            {
+                return 0;
+            }
+
+            @Override
+            public void setField( int id, int value )
+            {
+
+            }
+
+            @Override
+            public int getFieldCount()
+            {
+                return 0;
+            }
+
+            @Override
+            public void clear()
+            {
+                TerribleChestInventory.this.clear();
+            }
+
+            @Override
+            public String getName()
+            {
+                return TerribleChestInventory.this.getName();
+            }
+
+            @Override
+            public boolean hasCustomName()
+            {
+                return TerribleChestInventory.this.hasCustomName();
+            }
+
+            @Override
+            public ITextComponent getDisplayName()
+            {
+                return TerribleChestInventory.this.getDisplayName();
+            }
+        };
     }
 
     @Override

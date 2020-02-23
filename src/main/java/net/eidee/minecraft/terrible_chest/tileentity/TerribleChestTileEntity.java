@@ -341,7 +341,7 @@ public class TerribleChestTileEntity
             TerribleChestInventory inventory = getTerribleChestInventory();
             if ( inventory != null )
             {
-                return ( T )new ItemHandler( inventory );
+                return ( T )new ItemHandler( inventory.createInventory() );
             }
         }
         return super.getCapability( capability, facing );

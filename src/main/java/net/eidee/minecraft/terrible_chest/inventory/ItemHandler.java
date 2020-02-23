@@ -29,6 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.util.IntUtil;
 
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -38,9 +39,9 @@ import net.minecraftforge.items.ItemHandlerHelper;
 public class ItemHandler
     implements IItemHandler
 {
-    private TerribleChestInventory inventory;
+    private IInventory inventory;
 
-    public ItemHandler( TerribleChestInventory inventory )
+    public ItemHandler( IInventory inventory )
     {
         this.inventory = inventory;
     }
@@ -71,7 +72,7 @@ public class ItemHandler
         int slotLimit = getSlotLimit( slot );
         if ( !stackInSlot.isEmpty() )
         {
-            int count = IntUtil.minUnsigned( inventory.getItemCount( slot ), slotLimit );
+            int count = stackInSlot.getCount();
             if ( count >= slotLimit )
             {
                 return stack;
