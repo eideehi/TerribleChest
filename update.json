@@ -7,30 +7,32 @@
     "1.15.1-recommended": "1.15.1-1",
     "1.14.4-latest": "1.14.4-8",
     "1.14.4-recommended": "1.14.4-2",
-    "1.12.2-latest": "1.12.2-4",
-    "1.12.2-recommended": "1.12.2-2"
+    "1.12.2-latest": "1.12.2-7",
+    "1.12.2-recommended": "1.12.2-7"
   },
   "1.15.2": {
-    "1.15.2-1": "1.15.2に対応 / MC1.15.2 Supported"
+    "1.15.2-1": "MC1.15.2 Supported."
   },
   "1.15.1": {
-    "1.15.1-1": "1.15.1に対応 / MC1.15.1 Supported"
+    "1.15.1-1": "MC1.15.1 Supported."
   },
   "1.14.4": {
-    "1.14.4-1": "新規公開 / New release",
-    "1.14.4-2": "ページを跨いでスロット入れ替えできるように改修 / Fix so that slots can be swap across pages.",
-    "1.14.4-3": "コンフィグの項目と機能追加 / Add configuration and features.",
-    "1.14.4-4": "バグフィックスとコンフィグの項目追加 / Bug fix and add configuration.",
-    "1.14.4-5": "ソートの種類を追加 / Add sort types.",
-    "1.14.4-6": "zh_cnの言語ファイルを追加 訳者: Aikini / Add zh_cn language file. Author: Aikini",
-    "1.14.4-7": "Modリストでのクラッシュを修正 / Fix crash on the mod list.",
-    "1.14.4-8": "水中でのブロック表現を修正。ソートキーを変更可能に / Change block representation in water. Add Sort Key Change."
+    "1.14.4-1": "New release",
+    "1.14.4-2": "Fix so that slots can be swap across pages.",
+    "1.14.4-3": "Add configuration and features.",
+    "1.14.4-4": "Bug fix and add configuration.",
+    "1.14.4-5": "Add sort types.",
+    "1.14.4-6": "Add zh_cn language file. Author: Aikini",
+    "1.14.4-7": "Fix crash on the mod list.",
+    "1.14.4-8": "Change block representation in water. Add Sort Key Change."
   },
   "1.12.2": {
-    "1.12.2-1": "1.12.2に対応 / MC1.12.2 Supported",
-    "1.12.2-2": "ページを跨いでスロット入れ替えできるように改修 / Fix so that slots can be swap across pages.",
-    "1.12.2-3": "外部インベントリ操作を受付できるように改修 / Change to accept external inventory operations.",
-    "1.12.2-4": "zh_cnの言語ファイルを追加 訳者: Aikini / Add zh_cn language file. Author: Aikini",
-    "1.12.2-5": "コンフィグから設定可能な制限事項を追加 / Add restrictions that can be set from Config."
+    "1.12.2-1": "MC1.12.2 Supported",
+    "1.12.2-2": "Fix so that slots can be swap across pages.",
+    "1.12.2-3": "Change to accept external inventory operations.",
+    "1.12.2-4": "Add zh_cn language file. Author: Aikini",
+    "1.12.2-5": "Add restrictions that can be set from Config.",
+    "1.12.2-6": "Addresses an issue where external inventory operations cannot be performed on a per-stack basis.",
+    "1.12.2-7": "Fix server crash when sending packets."
   }
 }
