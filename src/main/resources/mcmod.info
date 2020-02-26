@@ -6,7 +6,7 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://www.curseforge.com/minecraft/mc-mods/terrible-chest",
-  "updateUrl": "https://raw.githubusercontent.com/eideehi/TerribleChest/master/update.json",
+  "updateUrl": "https://eideehi.github.io/minecraft/terrible_chest.json",
   "authorList": ["EideeHi"],
   "credits": "",
   "logoFile": "",

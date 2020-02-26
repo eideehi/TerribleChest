@@ -24,6 +24,7 @@
 
 package net.eidee.minecraft.terrible_chest.network;
 
+import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -40,6 +41,6 @@ public class Networks
 
     public static void init()
     {
-        TERRIBLE_CHEST = NetworkRegistry.INSTANCE.newSimpleChannel( Names.TERRIBLE_CHEST );
+        TERRIBLE_CHEST = NetworkRegistry.INSTANCE.newSimpleChannel( TerribleChest.MOD_ID );
     }
 }
