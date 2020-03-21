@@ -18,21 +18,18 @@ issueTrackerURL="https://github.com/eideehi/TerribleChest/issues" #optional
      # A display name for the mod
     displayName="Terrible Chest" #mandatory
     # A URL to query for updates for this mod. See the JSON update specification <here>
-    updateJSONURL="https://raw.githubusercontent.com/eideehi/TerribleChest/master/update.json" #optional
+    updateJSONURL="https://eideehi.github.io/minecraft/terrible_chest.json" #optional
     # A URL for the "homepage" for this mod, displayed in the mod UI
     displayURL="https://www.curseforge.com/minecraft/mc-mods/terrible-chest" #optional
     # A text field displayed in the mod UI
-    credits="Aikini" #optional
+    credits="Aikini,The_BadUser(vanja-san)" #optional
     # A text field displayed in the mod UI
     authors="EideeHi" #optional
     # The description text for the mod (multi line!) (#mandatory)
     description='''
-１ページ２７スロット、１スロットにつき約４３億個収納することができるチェストを追加します。
-さらに、このＭｏｄにより追加されるアイテム「ダイヤモンドスフィア」を消費することで、１ページ分の容量を追加することが可能です。
-
 1 page 27 slots and about 4.3 billion amounts per slot.
 Use 'diamond sphere' for unlock new page.
-                '''
+'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.terrible_chest]] #optional
     # the modid of the dependency

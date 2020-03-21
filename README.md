@@ -103,3 +103,4 @@ Using Terrible Bangle, you can perform special operations for Terrible Chest inv
 |Language|Translators|
 |--------|-----------|
 |zh_cn|Aikini|
+|ru_ru|The_BadUser(vanja-san)|
