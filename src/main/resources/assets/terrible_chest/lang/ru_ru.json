@@ -1,0 +1,27 @@
+{
+  "_comment": "Блоки",
+  "block.terrible_chest.terrible_chest": "Громадный сундук",
+
+  "_comment": "Items",
+  "item.terrible_chest.diamond_sphere": "Алмазная сфера",
+  "item.terrible_chest.terrible_bangle": "Громадный браслет",
+
+  "_comment": "Container",
+  "container.terrible_chest.terrible_chest": "Громадный сундук",
+
+  "_comment": "Интерфейс",
+  "gui.terrible_chest.terrible_chest.count": "Количество: %,d",
+
+  "_comment": "Привязка клавиш",
+  "key.terrible_chest": "Громадный сундук",
+  "key.terrible_chest.sort0": "Сортировать 0",
+  "key.terrible_chest.sort1": "Сортировать 1",
+  "key.terrible_chest.sort2": "Сортировать 2",
+  "key.terrible_chest.sort3": "Сортировать 3",
+  "key.terrible_chest.sort4": "Сортировать 4",
+  "key.terrible_chest.sort5": "Сортировать 5",
+  "key.terrible_chest.sort6": "Сортировать 6",
+  "key.terrible_chest.sort7": "Сортировать 7",
+  "key.terrible_chest.sort8": "Сортировать 8",
+  "key.terrible_chest.sort9": "Сортировать 9"
+}
