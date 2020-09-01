@@ -24,11 +24,17 @@
 
 package net.eidee.minecraft.terrible_chest.network.message.gui;
 
-import net.minecraft.network.PacketBuffer;
+import java.util.function.Supplier;
 
-public class ChangePage
+import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public final class ChangePage
 {
-    private int page;
+    private final int page;
 
     public ChangePage( int page )
     {
@@ -48,5 +54,18 @@ public class ChangePage
     public static ChangePage decode( PacketBuffer buffer )
     {
         return new ChangePage( buffer.readInt() );
+    }
+
+    public static void handle( ChangePage message, Supplier< NetworkEvent.Context > ctx )
+    {
+        NetworkEvent.Context _ctx = ctx.get();
+        _ctx.enqueueWork( () -> {
+            ServerPlayerEntity player = _ctx.getSender();
+            if ( player != null && player.openContainer instanceof TerribleChestContainer )
+            {
+                ( ( TerribleChestContainer )player.openContainer ).changePage( message.getPage() );
+            }
+        } );
+        _ctx.setPacketHandled( true );
     }
 }

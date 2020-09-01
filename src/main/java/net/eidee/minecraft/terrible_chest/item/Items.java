@@ -24,18 +24,20 @@
 
 package net.eidee.minecraft.terrible_chest.item;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class Items
 {
+    @ObjectHolder( RegistryNames.DIAMOND_SPHERE )
+    public static Item DIAMOND_SPHERE;
+
+    @ObjectHolder( RegistryNames.TERRIBLE_BANGLE )
+    public static Item TERRIBLE_BANGLE;
+
     private Items()
     {
     }
-
-
-    @ObjectHolder( Names.DIAMOND_SPHERE )
-    public static Item DIAMOND_SPHERE;
 }

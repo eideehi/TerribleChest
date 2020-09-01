@@ -24,17 +24,20 @@
 
 package net.eidee.minecraft.terrible_chest.tileentity;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class TileEntityTypes
 {
+    @ObjectHolder( RegistryNames.TERRIBLE_CHEST )
+    public static TileEntityType< TerribleChestTileEntity > TERRIBLE_CHEST;
+
+    @ObjectHolder( RegistryNames.TERRIBLE_CHEST_2 )
+    public static TileEntityType< TerribleChestTileEntity2 > TERRIBLE_CHEST_2;
+
     private TileEntityTypes()
     {
     }
-
-    @ObjectHolder( Names.TERRIBLE_CHEST )
-    public static TileEntityType< TerribleChestTileEntity > TERRIBLE_CHEST;
 }

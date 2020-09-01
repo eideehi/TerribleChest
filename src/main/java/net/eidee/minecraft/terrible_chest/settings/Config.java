@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.config;
+package net.eidee.minecraft.terrible_chest.settings;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -46,31 +46,31 @@ public class Config
         public final ForgeConfigSpec.LongValue slotStackLimit;
         public final ForgeConfigSpec.IntValue maxPageLimit;
         public final ForgeConfigSpec.IntValue resetMaxPage;
+        public final ForgeConfigSpec.IntValue inventoryRows;
 
         Common( ForgeConfigSpec.Builder builder )
         {
-            builder.comment( "" )
-                   .push( "common" );
+            builder.comment( "" ).push( "common" );
 
             useSinglePageMode = builder.comment( "Use single page mode" )
                                        .translation( "config.terrible_chest.use_single_page_mode" )
-                                       .worldRestart()
                                        .define( "useSinglePageMode", false );
 
             slotStackLimit = builder.comment( "Stack size limit of slot" )
                                     .translation( "config.terrible_chest.slot_stack_limit" )
-                                    .worldRestart()
                                     .defineInRange( "slotStackLimit", 4294967295L, 64, 4294967295L );
 
             maxPageLimit = builder.comment( "Maximum page limit" )
                                   .translation( "config.terrible_chest.max_page_limit" )
-                                  .worldRestart()
                                   .defineInRange( "maxPageLimit", 79536431, 2, 79536431 );
 
             resetMaxPage = builder.comment( "*Recovery options* Reset the max page that is 0." )
-                                  .translation( "" )
-                                  .worldRestart()
+                                  .translation( "config.terrible_chest.reset_max_page" )
                                   .defineInRange( "resetMaxPage", 1, 1, 79536431 );
+
+            inventoryRows = builder.comment( "Inventory rows for multi page mode" )
+                                   .translation( "config.terrible_chest.inventory_rows" )
+                                   .defineInRange( "inventoryRows", 3, 1, 6 );
 
             builder.pop();
         }

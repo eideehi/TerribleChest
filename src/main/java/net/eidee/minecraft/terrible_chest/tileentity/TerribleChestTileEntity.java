@@ -1,100 +1,148 @@
-/*
- * MIT License
- *
- * Copyright (c) 2019 EideeHi
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package net.eidee.minecraft.terrible_chest.tileentity;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestItemsCapability;
-import net.eidee.minecraft.terrible_chest.capability.logic.TerribleChestItemSorters;
-import net.eidee.minecraft.terrible_chest.capability.logic.TerribleChestItemsLogic;
-import net.eidee.minecraft.terrible_chest.inventory.ItemHandler;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
+import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
+import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+import net.eidee.minecraft.terrible_chest.item.ItemStackContainer;
+import net.eidee.minecraft.terrible_chest.item.TerribleChestItemHandler;
+import net.eidee.minecraft.terrible_chest.settings.Config;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public abstract class TerribleChestTileEntity< LOGIC extends TerribleChestItemsLogic, SELF extends TerribleChestTileEntity< LOGIC, SELF > >
+public class TerribleChestTileEntity
     extends TileEntity
     implements INamedContainerProvider
 {
-    protected UUID ownerId;
+    static ITextComponent CONTAINER_NAME = new TranslationTextComponent( "container.terrible_chest.terrible_chest" );
+
+    private UUID ownerId;
+    private int page;
 
     public TerribleChestTileEntity()
     {
         super( TileEntityTypes.TERRIBLE_CHEST );
+        this.ownerId = null;
+        this.page = 0;
     }
 
-    protected abstract SELF getSelf();
-
-    protected abstract LOGIC castLogic( TerribleChestItemsLogic logic );
-
-    protected abstract TerribleChestInventoryWrapper.Factory< LOGIC, SELF > getInventoryWrapperFactory();
-
-    protected LazyOptional< TerribleChestInventoryWrapper< LOGIC, SELF > > createInventoryWrapper()
+    private void dataFix( CompoundNBT compound )
     {
-        World world = Objects.requireNonNull( getWorld() );
-        PlayerEntity owner = world.getPlayerByUuid( ownerId );
-        if ( owner != null )
+        if ( compound.contains( "OwnerIdMost" ) && compound.contains( "OwnerIdLeast" ) )
         {
-            return owner.getCapability( Capabilities.TERRIBLE_CHEST )
-                        .map( TerribleChestItemsCapability::getLogic )
-                        .map( this::castLogic )
-                        .map( x -> getInventoryWrapperFactory().create( getSelf(), x ) );
+            UUID uuid = new UUID( compound.getLong( "OwnerIdMost" ), compound.getLong( "OwnerIdLeast" ) );
+            compound.putUniqueId( "OwnerId", uuid );
         }
-        return LazyOptional.empty();
     }
 
-    protected boolean isUsableByPlayer( PlayerEntity player )
+    private TerribleChestItemHandler createItemHandler( Int2ObjectMap< ItemStackContainer > containers )
     {
-        World world = Objects.requireNonNull( getWorld() );
-        BlockPos pos = getPos();
-        if ( world.getTileEntity( pos ) != this || !Objects.equals( player.getUniqueID(), ownerId ) )
+        if ( Config.COMMON.useSinglePageMode.get() )
         {
-            return false;
+            return TerribleChestItemHandler.create( containers, 0, 133 );
         }
-        return player.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5 ) <= 64.0;
+        else
+        {
+            int slots = Config.COMMON.inventoryRows.get() * 9;
+            return TerribleChestItemHandler.create( containers, () -> page * slots, () -> slots );
+        }
+    }
+
+    private TerribleChestInventory createInventory( TerribleChestCapability chest )
+    {
+        TerribleChestItemHandler itemHandler = createItemHandler( chest.getContainers() );
+        return new TerribleChestInventory()
+        {
+            @Override
+            public TerribleChestItemHandler getItemHandler()
+            {
+                return itemHandler;
+            }
+
+            @Override
+            public void markDirty()
+            {
+            }
+
+            @Override
+            public boolean isUsableByPlayer( PlayerEntity player )
+            {
+                World world = getWorld();
+                BlockPos pos = getPos();
+                if ( world == null || world.getTileEntity( pos ) != TerribleChestTileEntity.this )
+                {
+                    return false;
+                }
+                else if ( !isOwner( player ) )
+                {
+                    return false;
+                }
+                else
+                {
+                    return !( player.getDistanceSq( pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D ) > 64.0D );
+                }
+            }
+        };
+    }
+
+    private IIntArray createChestData( TerribleChestCapability chest )
+    {
+        return new IIntArray()
+        {
+            @Override
+            public int get( int index )
+            {
+                if ( index == TerribleChestContainer.DATA_MAX_PAGE )
+                {
+                    return chest.getMaxPage();
+                }
+                if ( index == TerribleChestContainer.DATA_CURRENT_PAGE )
+                {
+                    return page;
+                }
+                return 0;
+            }
+
+            @Override
+            public void set( int index, int value )
+            {
+                if ( index == TerribleChestContainer.DATA_MAX_PAGE )
+                {
+                    chest.setMaxPage( value );
+                }
+                if ( index == TerribleChestContainer.DATA_CURRENT_PAGE )
+                {
+                    page = value;
+                }
+            }
+
+            @Override
+            public int size()
+            {
+                return 2;
+            }
+        };
     }
 
     public void setOwnerId( UUID ownerId )
@@ -110,14 +158,31 @@ public abstract class TerribleChestTileEntity< LOGIC extends TerribleChestItemsL
     @Override
     public ITextComponent getDisplayName()
     {
-        return new TranslationTextComponent( "container.terrible_chest.terrible_chest" );
+        return CONTAINER_NAME;
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu( int id, PlayerInventory playerInventory, PlayerEntity playerEntity )
+    {
+        TerribleChestCapability chest = playerEntity.getCapability( Capabilities.TERRIBLE_CHEST )
+                                                    .orElseThrow( NoSuchElementException::new );
+        return new TerribleChestContainer( id, playerInventory, createInventory( chest ), createChestData( chest ) );
     }
 
     @Override
-    public void read( CompoundNBT compound )
+    public void read( BlockState state, CompoundNBT compound )
     {
-        super.read( compound );
-        ownerId = compound.getUniqueId( "OwnerId" );
+        super.read( state, compound );
+
+        dataFix( compound );
+
+        ownerId = null;
+        if ( compound.hasUniqueId( "OwnerId" ) )
+        {
+            ownerId = compound.getUniqueId( "OwnerId" );
+        }
+        page = compound.getInt( "Page" );
     }
 
     @Override
@@ -128,128 +193,7 @@ public abstract class TerribleChestTileEntity< LOGIC extends TerribleChestItemsL
         {
             compound.putUniqueId( "OwnerId", ownerId );
         }
+        compound.putInt( "Page", page );
         return compound;
-    }
-
-    @Nonnull
-    @Override
-    public < T > LazyOptional< T > getCapability( @Nonnull Capability< T > cap, @Nullable Direction side )
-    {
-        if ( cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
-        {
-            World world = Objects.requireNonNull( getWorld() );
-            PlayerEntity owner = world.getPlayerByUuid( ownerId );
-            if ( owner != null )
-            {
-                return createInventoryWrapper().map( ItemHandler::new ).cast();
-            }
-        }
-        return super.getCapability( cap, side );
-    }
-
-    public static abstract class TerribleChestInventoryWrapper< LOGIC extends TerribleChestItemsLogic, TE extends TerribleChestTileEntity< LOGIC, TE > >
-        implements IInventory
-    {
-        protected final TE tileEntity;
-        protected final LOGIC logic;
-        protected final IInventory inventory;
-
-        public TerribleChestInventoryWrapper( TE tileEntity, LOGIC logic )
-        {
-            this.tileEntity = tileEntity;
-            this.logic = logic;
-            this.inventory = logic.createInventory();
-        }
-
-        protected abstract IIntArray getData();
-
-        public void swap( int index1, int index2 )
-        {
-            if ( index1 >= 0 && index2 >= 0 )
-            {
-                logic.swap( index1, index2 );
-            }
-        }
-
-        public void sort( int sortType )
-        {
-            if ( sortType == 1 )
-            {
-                logic.sort( TerribleChestItemSorters.DEFAULT_2, 0, getSizeInventory() );
-            }
-            else if ( sortType == 2 )
-            {
-                logic.sort( TerribleChestItemSorters.DEFAULT_3, 0, getSizeInventory() );
-            }
-            else
-            {
-                logic.sort( TerribleChestItemSorters.DEFAULT_1, 0, getSizeInventory() );
-            }
-        }
-
-        @Override
-        public int getSizeInventory()
-        {
-            return inventory.getSizeInventory();
-        }
-
-        @Override
-        public boolean isEmpty()
-        {
-            return inventory.isEmpty();
-        }
-
-        @Override
-        public ItemStack getStackInSlot( int index )
-        {
-            return inventory.getStackInSlot( index );
-        }
-
-        @Override
-        public ItemStack decrStackSize( int index, int count )
-        {
-            return inventory.decrStackSize( index, count );
-        }
-
-        @Override
-        public ItemStack removeStackFromSlot( int index )
-        {
-            return inventory.removeStackFromSlot( index );
-        }
-
-        @Override
-        public void setInventorySlotContents( int index, ItemStack stack )
-        {
-            inventory.setInventorySlotContents( index, stack );
-        }
-
-        @Override
-        public void markDirty()
-        {
-            inventory.markDirty();
-        }
-
-        @Override
-        public void clear()
-        {
-            inventory.clear();
-        }
-
-        @Override
-        public boolean isUsableByPlayer( PlayerEntity player )
-        {
-            return tileEntity.isUsableByPlayer( player );
-        }
-
-        @Override
-        public int getInventoryStackLimit()
-        {
-            return inventory.getInventoryStackLimit();
-        }
-
-        public interface Factory< LOGIC extends TerribleChestItemsLogic, TE extends TerribleChestTileEntity< LOGIC, TE > >
-        {
-            TerribleChestInventoryWrapper< LOGIC, TE > create( TE tileEntity, LOGIC logic );
-        }
     }
 }

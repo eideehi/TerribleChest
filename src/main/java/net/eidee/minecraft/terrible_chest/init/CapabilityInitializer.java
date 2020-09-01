@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.util;
+package net.eidee.minecraft.terrible_chest.init;
 
-public class IntUtil
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
+
+import net.minecraftforge.common.capabilities.CapabilityManager;
+
+public class CapabilityInitializer
 {
-    private IntUtil()
+    public static void registerCapability()
     {
-    }
-
-    /**
-     * ２つの整数を符号なし整数として比較、小さい方を返す。
-     */
-    public static int minUnsigned( int x, int y )
-    {
-        return Integer.compareUnsigned( x, y ) <= 0 ? x : y;
+        CapabilityManager.INSTANCE.register( TerribleChestCapability.class,
+                                             TerribleChestCapability.storage(),
+                                             TerribleChestCapability::new );
     }
 }

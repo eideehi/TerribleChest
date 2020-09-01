@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,20 @@
 
 package net.eidee.minecraft.terrible_chest.block;
 
+import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import mcp.MethodsReturnNonnullByDefault;
-import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
+import net.eidee.minecraft.terrible_chest.item.ItemStackContainer;
+import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity2;
+import net.eidee.minecraft.terrible_chest.util.ItemStackContainerUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -40,6 +45,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -47,61 +53,82 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class TerribleChestBlock
+public class TerribleChestBlock2
     extends Block
     implements IWaterLoggable
 {
-    private static final ITextComponent MESSAGE_AUTH_ERROR;
-
-    static
-    {
-        MESSAGE_AUTH_ERROR = new TranslationTextComponent( "message.terrible_chest.auth_error" );
-    }
-
-    static final VoxelShape TERRIBLE_CHEST_SHAPE;
-
-    static
-    {
-        TERRIBLE_CHEST_SHAPE = VoxelShapes.or( Block.makeCuboidShape( 0.0D, 0.0D, 0.0D, 4.0D, 16.0D, 4.0D ),
-                                               Block.makeCuboidShape( 0.0D, 0.0D, 12.0D, 4.0D, 16.0D, 16.0D ),
-                                               Block.makeCuboidShape( 0.0D, 0.0D, 4.0D, 4.0D, 4.0D, 12.0D ),
-                                               Block.makeCuboidShape( 12.0D, 0.0D, 4.0D, 16.0D, 4.0D, 12.0D ),
-                                               Block.makeCuboidShape( 0.0D, 12.0D, 4.0D, 4.0D, 16.0D, 12.0D ),
-                                               Block.makeCuboidShape( 12.0D, 12.0D, 4.0D, 16.0D, 16.0D, 12.0D ),
-                                               Block.makeCuboidShape( 12.0D, 0.0D, 0.0D, 16.0D, 16.0D, 4.0D ),
-                                               Block.makeCuboidShape( 12.0D, 0.0D, 12.0D, 16.0D, 16.0D, 16.0D ),
-                                               Block.makeCuboidShape( 4.0D, 0.0D, 0.0D, 12.0D, 4.0D, 4.0D ),
-                                               Block.makeCuboidShape( 4.0D, 12.0D, 0.0D, 12.0D, 16.0D, 4.0D ),
-                                               Block.makeCuboidShape( 4.0D, 0.0D, 12.0D, 12.0D, 4.0D, 16.0D ),
-                                               Block.makeCuboidShape( 4.0D, 12.0D, 12.0D, 12.0D, 16.0D, 16.0D ) );
-    }
-
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    public TerribleChestBlock( Properties properties )
+    public TerribleChestBlock2( Properties properties )
     {
         super( properties );
         setDefaultState( stateContainer.getBaseState().with( WATERLOGGED, false ) );
     }
 
+    @OnlyIn( Dist.CLIENT )
+    @Override
+    public void addInformation( ItemStack stack,
+                                @Nullable IBlockReader worldIn,
+                                List< ITextComponent > tooltip,
+                                ITooltipFlag flagIn )
+    {
+        CompoundNBT compound = stack.getChildTag( "BlockEntityTag" );
+        if ( compound != null )
+        {
+            if ( compound.contains( "Items", Constants.NBT.TAG_LIST ) )
+            {
+                Int2ObjectMap< ItemStackContainer > containers = ItemStackContainerUtil.newContainers();
+                ItemStackContainerUtil.loadAllItems( compound, containers );
+
+                int i = 0;
+                int j = 0;
+
+                for ( ItemStackContainer next : containers.values() )
+                {
+                    if ( !next.isEmpty() )
+                    {
+                        ++j;
+                        if ( i <= 4 )
+                        {
+                            ++i;
+                            IFormattableTextComponent textComponent = next.getStack().getDisplayName().deepCopy();
+                            textComponent.appendString( " x" ).appendString( String.format( "%,d", next.getCount() ) );
+                            tooltip.add( textComponent );
+                        }
+                    }
+                }
+
+                if ( j - i > 0 )
+                {
+                    tooltip.add( new TranslationTextComponent( "container.shulkerBox.more", j - i ).mergeStyle(
+                        TextFormatting.ITALIC ) );
+                }
+            }
+        }
+    }
+
     @Override
     public VoxelShape getShape( BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context )
     {
-        return TERRIBLE_CHEST_SHAPE;
+        return TerribleChestBlock.TERRIBLE_CHEST_SHAPE;
     }
 
     @Override
@@ -114,7 +141,7 @@ public class TerribleChestBlock
     @Override
     public TileEntity createTileEntity( BlockState state, IBlockReader world )
     {
-        return new TerribleChestTileEntity();
+        return new TerribleChestTileEntity2();
     }
 
     @Override
@@ -125,12 +152,12 @@ public class TerribleChestBlock
                                  ItemStack stack )
     {
         TileEntity tileentity = worldIn.getTileEntity( pos );
-        if ( tileentity instanceof TerribleChestTileEntity )
+        if ( tileentity instanceof TerribleChestTileEntity2 )
         {
-            TerribleChestTileEntity chestTileEntity = ( TerribleChestTileEntity )tileentity;
-            if ( placer instanceof PlayerEntity )
+            TerribleChestTileEntity2 chestTileEntity = ( TerribleChestTileEntity2 )tileentity;
+            if ( stack.hasDisplayName() )
             {
-                chestTileEntity.setOwnerId( placer.getUniqueID() );
+                chestTileEntity.setCustomName( stack.getDisplayName() );
             }
         }
     }
@@ -157,20 +184,40 @@ public class TerribleChestBlock
         }
         else
         {
-            TileEntity tileEntity = worldIn.getTileEntity( pos );
-            if ( tileEntity instanceof TerribleChestTileEntity )
-            {
-                if ( ( ( TerribleChestTileEntity )tileEntity ).isOwner( player ) )
-                {
-                    player.openContainer( state.getContainer( worldIn, pos ) );
-                }
-                else
-                {
-                    player.sendMessage( MESSAGE_AUTH_ERROR, Util.DUMMY_UUID );
-                }
-            }
+            player.openContainer( state.getContainer( worldIn, pos ) );
             return ActionResultType.CONSUME;
         }
+    }
+
+    @Override
+    public void onBlockHarvested( World worldIn, BlockPos pos, BlockState state, PlayerEntity player )
+    {
+        if ( !worldIn.isRemote() &&
+             player.isCreative() &&
+             worldIn.getGameRules().getBoolean( GameRules.DO_TILE_DROPS ) )
+        {
+            TileEntity tileEntity = worldIn.getTileEntity( pos );
+            if ( tileEntity instanceof TerribleChestTileEntity2 )
+            {
+                TerribleChestTileEntity2 chestTileEntity = ( TerribleChestTileEntity2 )tileEntity;
+
+                ItemStack stack = new ItemStack( this );
+                CompoundNBT compound = chestTileEntity.saveToNbt( new CompoundNBT() );
+                if ( !compound.isEmpty() )
+                {
+                    stack.setTagInfo( "BlockEntityTag", compound );
+                }
+
+                if ( chestTileEntity.hasCustomName() )
+                {
+                    stack.setDisplayName( chestTileEntity.getCustomName() );
+                }
+
+                spawnAsEntity( worldIn, pos, stack );
+            }
+        }
+
+        super.onBlockHarvested( worldIn, pos, state, player );
     }
 
     @Nullable

@@ -1,0 +1,7 @@
+{
+	"parent": "terrible_chest:block/terrible_chest_base",
+	"textures": {
+		"particle": "terrible_chest:block/terrible_chest_2",
+		"texture": "terrible_chest:block/terrible_chest_2"
+	}
+}

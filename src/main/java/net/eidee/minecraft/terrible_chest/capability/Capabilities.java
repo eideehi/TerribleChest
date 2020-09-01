@@ -29,10 +29,10 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public class Capabilities
 {
+    @CapabilityInject( TerribleChestCapability.class )
+    public static Capability< TerribleChestCapability > TERRIBLE_CHEST;
+
     private Capabilities()
     {
     }
-
-    @CapabilityInject( TerribleChestItemsCapability.class )
-    public static Capability< TerribleChestItemsCapability > TERRIBLE_CHEST;
 }

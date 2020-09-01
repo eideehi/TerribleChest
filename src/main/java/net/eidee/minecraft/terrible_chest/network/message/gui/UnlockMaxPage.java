@@ -24,16 +24,37 @@
 
 package net.eidee.minecraft.terrible_chest.network.message.gui;
 
-import net.minecraft.network.PacketBuffer;
+import java.util.function.Supplier;
 
-public class UnlockMaxPage
+import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public enum UnlockMaxPage
 {
+    INSTANCE;
+
     public static void encode( UnlockMaxPage message, PacketBuffer buffer )
     {
     }
 
     public static UnlockMaxPage decode( PacketBuffer buffer )
     {
-        return new UnlockMaxPage();
+        return INSTANCE;
+    }
+
+    public static void handle( UnlockMaxPage message, Supplier< NetworkEvent.Context > ctx )
+    {
+        NetworkEvent.Context _ctx = ctx.get();
+        _ctx.enqueueWork( () -> {
+            ServerPlayerEntity player = _ctx.getSender();
+            if ( player != null && player.openContainer instanceof TerribleChestContainer )
+            {
+                ( ( TerribleChestContainer )player.openContainer ).unlockMaxPage();
+            }
+        } );
+        _ctx.setPacketHandled( true );
     }
 }

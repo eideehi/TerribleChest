@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
 
-import net.eidee.minecraft.terrible_chest.TerribleChest;
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.TerribleChestMod;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 import net.eidee.minecraft.terrible_chest.item.TerribleBangleItem;
 
 import net.minecraft.item.Item;
@@ -35,11 +35,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class ItemRegistry
+@Mod.EventBusSubscriber( modid = TerribleChestMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
+public class ItemInitializer
 {
     @SubscribeEvent
-    public static void register( RegistryEvent.Register< Item > event )
+    public static void registerItem( RegistryEvent.Register< Item > event )
     {
         IForgeRegistry< Item > registry = event.getRegistry();
 
@@ -48,13 +48,13 @@ public class ItemRegistry
         {
             prop = new Item.Properties().group( ItemGroup.MISC );
 
-            item = new Item( prop ).setRegistryName( Names.DIAMOND_SPHERE );
+            item = new Item( prop ).setRegistryName( RegistryNames.DIAMOND_SPHERE );
             registry.register( item );
         }
         {
             prop = new Item.Properties().group( ItemGroup.MISC );
 
-            item = new TerribleBangleItem( prop ).setRegistryName( Names.TERRIBLE_BANGLE );
+            item = new TerribleBangleItem( prop ).setRegistryName( RegistryNames.TERRIBLE_BANGLE );
             registry.register( item );
         }
     }

@@ -1,6 +1,7 @@
 {
   "_comment": "Blocks",
   "block.terrible_chest.terrible_chest": "可怕的箱子",
+  "block.terrible_chest.terrible_chest_2": "Emerald Terrible Chest",
 
   "_comment": "Items",
   "item.terrible_chest.diamond_sphere": "钻石球",
@@ -23,5 +24,8 @@
   "key.terrible_chest.sort6": "排序 6",
   "key.terrible_chest.sort7": "排序 7",
   "key.terrible_chest.sort8": "排序 8",
-  "key.terrible_chest.sort9": "排序 9"
+  "key.terrible_chest.sort9": "排序 9",
+
+  "_comment": "Messages",
+  "message.terrible_chest.auth_error": "You do not have permission to access this chest."
 }

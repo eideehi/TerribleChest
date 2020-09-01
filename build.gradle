@@ -153,8 +153,8 @@ curseforge {
     apiKey = System.properties['curseforge_apikey'] ?: '0';
     project {
         id = '334619'
-        changelogType = 'markdown'
-        changelog = file('changelog.md')
+        changelogType = 'text'
+        changelog = file('changelog.txt')
         releaseType = 'release'
 
         mainArtifact(jar) {

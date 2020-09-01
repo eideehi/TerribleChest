@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,41 @@
 
 package net.eidee.minecraft.terrible_chest.eventhandler;
 
-import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.TerribleChestMod;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID )
-public class CloneCapability
+@Mod.EventBusSubscriber( modid = TerribleChestMod.MOD_ID )
+public class CapabilityEventHandler
 {
     @SubscribeEvent
-    public static void cloneCapability( PlayerEvent.Clone event )
+    public static void clone( PlayerEvent.Clone event )
     {
         PlayerEntity original = event.getOriginal();
         original.revive();
-        original.getCapability( Capabilities.TERRIBLE_CHEST )
-                .ifPresent( inventory -> {
-                    PlayerEntity clone = event.getPlayer();
-                    clone.getCapability( Capabilities.TERRIBLE_CHEST )
-                         .ifPresent( cloneInventory -> {
-                             cloneInventory.deserializeNBT( inventory.serializeNBT() );
-                         } );
-                } );
+        original.getCapability( Capabilities.TERRIBLE_CHEST ).ifPresent( chest -> {
+            PlayerEntity clone = event.getPlayer();
+            clone.getCapability( Capabilities.TERRIBLE_CHEST ).ifPresent( cloneChest -> {
+                cloneChest.deserializeNBT( chest.serializeNBT() );
+            } );
+        } );
         original.remove( true );
+    }
+
+    @SubscribeEvent
+    public static void attachCapabilities( AttachCapabilitiesEvent< Entity > event )
+    {
+        Entity entity = event.getObject();
+        if ( entity instanceof PlayerEntity )
+        {
+            event.addCapability( TerribleChestCapability.REGISTRY_KEY, TerribleChestCapability.provider() );
+        }
     }
 }

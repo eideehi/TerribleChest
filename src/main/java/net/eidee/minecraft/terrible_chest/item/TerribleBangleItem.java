@@ -24,32 +24,31 @@
 
 package net.eidee.minecraft.terrible_chest.item;
 
+import java.util.NoSuchElementException;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestItemsCapability;
-import net.eidee.minecraft.terrible_chest.capability.logic.TerribleChestItemsLogic;
-import net.eidee.minecraft.terrible_chest.inventory.ItemHandler;
-import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -61,59 +60,95 @@ public class TerribleBangleItem
         super( properties );
     }
 
-    private void collectItems( TileEntity tileEntity, PlayerEntity playerEntity )
+    private void moveInventoryItems( IItemHandler src, IItemHandler dest )
     {
-        LazyOptional< IItemHandler > inventoryOptional;
-        inventoryOptional = playerEntity.getCapability( Capabilities.TERRIBLE_CHEST )
-                                        .map( TerribleChestItemsCapability::getLogic )
-                                        .map( TerribleChestItemsLogic::createInventory )
-                                        .map( ItemHandler::new );
-        LazyOptional< IItemHandler > itemHandlerOptional;
-        itemHandlerOptional = tileEntity.getCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY );
+        for ( int i = 0; i < src.getSlots(); i++ )
+        {
+            ItemStack stackInSlot;
+            while ( !( stackInSlot = src.getStackInSlot( i ) ).isEmpty() )
+            {
+                ItemStack stack = src.extractItem( i, stackInSlot.getMaxStackSize(), false );
 
-        inventoryOptional.ifPresent( inventory -> {
-            itemHandlerOptional.ifPresent( itemHandler -> {
-                for ( int i = 0; i < itemHandler.getSlots(); i++ )
+                IntList emptySlots = new IntArrayList();
+                for ( int j = 0; j < dest.getSlots(); j++ )
                 {
-                    ItemStack stack = itemHandler.extractItem( i, Integer.MAX_VALUE, false );
-                    for ( int j = 0; j < inventory.getSlots(); j++ )
+                    if ( dest.getStackInSlot( j ).isEmpty() )
                     {
-                        stack = inventory.insertItem( j, stack, false );
+                        emptySlots.add( j );
+                    }
+                    else
+                    {
+                        stack = dest.insertItem( j, stack, false );
                         if ( stack.isEmpty() )
                         {
                             break;
                         }
                     }
-                    if ( !stack.isEmpty() )
+                }
+
+                if ( !stack.isEmpty() )
+                {
+                    IntListIterator it = emptySlots.iterator();
+                    while ( it.hasNext() )
                     {
-                        itemHandler.insertItem( i, stack, false );
+                        int emptySlot = it.nextInt();
+                        stack = dest.insertItem( emptySlot, stack, false );
+                        if ( stack.isEmpty() )
+                        {
+                            break;
+                        }
                     }
                 }
-            } );
-        } );
+
+                if ( !stack.isEmpty() )
+                {
+                    src.insertItem( i, stack, false );
+                    break;
+                }
+            }
+        }
+    }
+
+    private void collectItems( PlayerEntity playerEntity, TileEntity tileEntity )
+    {
+        IItemHandler src = tileEntity.getCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+                                     .orElse( EmptyHandler.INSTANCE );
+        IItemHandler dest = playerEntity.getCapability( Capabilities.TERRIBLE_CHEST )
+                                        .map( TerribleChestCapability::getContainers )
+                                        .map( TerribleChestItemHandler::create )
+                                        .orElseThrow( NoSuchElementException::new );
+        moveInventoryItems( src, dest );
     }
 
     @Override
     public ActionResult< ItemStack > onItemRightClick( World world, PlayerEntity playerEntity, Hand hand )
     {
         ItemStack heldItem = playerEntity.getHeldItem( hand );
-        RayTraceResult rayTrace = rayTrace( world, playerEntity, RayTraceContext.FluidMode.NONE );
-        if ( rayTrace.getType() == RayTraceResult.Type.BLOCK && rayTrace instanceof BlockRayTraceResult )
+
+        BlockRayTraceResult rayTrace = rayTrace( world, playerEntity, RayTraceContext.FluidMode.NONE );
+        if ( rayTrace.getType() != RayTraceResult.Type.BLOCK )
         {
-            BlockRayTraceResult blockRayTrace = ( BlockRayTraceResult )rayTrace;
-            BlockPos pos = blockRayTrace.getPos();
-            TileEntity tileEntity = world.getTileEntity( pos );
-            if ( tileEntity != null && !( tileEntity instanceof TerribleChestTileEntity ) )
-            {
-                playerEntity.setActiveHand( hand );
-                playerEntity.swingArm( hand );
-                playerEntity.playSound( SoundEvents.UI_BUTTON_CLICK, 0.25F, 1.0F );
-                if ( !world.isRemote() )
-                {
-                    collectItems( tileEntity, playerEntity );
-                }
-            }
+            return ActionResult.resultPass( heldItem );
         }
-        return new ActionResult<>( ActionResultType.SUCCESS, heldItem );
+
+        BlockPos pos = rayTrace.getPos();
+        TileEntity tileEntity = world.getTileEntity( pos );
+        if ( tileEntity != null )
+        {
+            playerEntity.setActiveHand( hand );
+            playerEntity.swingArm( hand );
+            playerEntity.playSound( SoundEvents.UI_BUTTON_CLICK, 0.25F, 1.0F );
+
+            if ( !world.isRemote() )
+            {
+                collectItems( playerEntity, tileEntity );
+            }
+
+            return ActionResult.resultSuccess( heldItem );
+        }
+        else
+        {
+            return ActionResult.resultFail( heldItem );
+        }
     }
 }

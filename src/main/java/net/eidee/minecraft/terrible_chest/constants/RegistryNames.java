@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,21 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.capability.logic;
+package net.eidee.minecraft.terrible_chest.constants;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestItem;
+import static net.eidee.minecraft.terrible_chest.TerribleChestMod.MOD_ID;
 
-public class SinglePageLogic
-    extends TerribleChestItemsLogic
+public class RegistryNames
 {
-    public SinglePageLogic( Int2ObjectMap< TerribleChestItem > items )
-    {
-        super( items );
-    }
+    public static final String TERRIBLE_CHEST = ( MOD_ID + ':' + "terrible_chest" );
 
-    @Override
-    protected int getInventorySize()
+    public static final String DIAMOND_SPHERE = ( MOD_ID + ':' + "diamond_sphere" );
+
+    public static final String TERRIBLE_BANGLE = ( MOD_ID + ':' + "terrible_bangle" );
+
+    public static final String TERRIBLE_CHEST_2 = ( MOD_ID + ':' + "terrible_chest_2" );
+
+    private RegistryNames()
     {
-        return 133;
     }
 }

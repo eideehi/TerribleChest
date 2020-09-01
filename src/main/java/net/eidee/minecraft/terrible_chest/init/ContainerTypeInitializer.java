@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,11 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
 
-import net.eidee.minecraft.terrible_chest.TerribleChest;
-import net.eidee.minecraft.terrible_chest.config.Config;
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.TerribleChestMod;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
-import net.eidee.minecraft.terrible_chest.inventory.container.MultiPageContainer;
-import net.eidee.minecraft.terrible_chest.inventory.container.SinglePageContainer;
 
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.event.RegistryEvent;
@@ -37,21 +34,20 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class ContainerTypeRegistry
+@Mod.EventBusSubscriber( modid = TerribleChestMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
+public class ContainerTypeInitializer
 {
     @SubscribeEvent
-    public static void register( RegistryEvent.Register< ContainerType< ? > > event )
+    public static void registerContainerType( RegistryEvent.Register< ContainerType< ? > > event )
     {
         IForgeRegistry< ContainerType< ? > > registry = event.getRegistry();
         ContainerType< ? > containerType;
         {
-            ContainerType.IFactory< TerribleChestContainer > factory;
-            factory = ( id, playerInventory ) ->
-                Config.COMMON.useSinglePageMode.get() ? new SinglePageContainer( id, playerInventory )
-                                                      : new MultiPageContainer( id, playerInventory );
-
-            containerType = new ContainerType<>( factory ).setRegistryName( Names.TERRIBLE_CHEST );
+            containerType = new ContainerType<>( TerribleChestContainer::createContainer ).setRegistryName( RegistryNames.TERRIBLE_CHEST );
+            registry.register( containerType );
+        }
+        {
+            containerType = new ContainerType<>( TerribleChestContainer::createContainer ).setRegistryName( RegistryNames.TERRIBLE_CHEST_2 );
             registry.register( containerType );
         }
     }

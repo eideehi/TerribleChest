@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.terrible_chest.network;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import static net.eidee.minecraft.terrible_chest.TerribleChestMod.MOD_ID;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -32,19 +32,25 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class Networks
 {
+    private static final String PROTOCOL_VERSION;
+    private static final SimpleChannel CHANNEL;
+
+    static
+    {
+        ResourceLocation channelName = new ResourceLocation( MOD_ID, "terrible_chest" );
+        PROTOCOL_VERSION = "1";
+        CHANNEL = NetworkRegistry.newSimpleChannel( channelName,
+                                                    () -> PROTOCOL_VERSION,
+                                                    PROTOCOL_VERSION::equals,
+                                                    PROTOCOL_VERSION::equals );
+    }
+
     private Networks()
     {
     }
 
-    private static final String TERRIBLE_CHEST_PROTOCOL_VERSION = "1";
-
-    public static SimpleChannel TERRIBLE_CHEST;
-
-    public static void init()
+    public static SimpleChannel getChannel()
     {
-        TERRIBLE_CHEST = NetworkRegistry.newSimpleChannel( new ResourceLocation( Names.TERRIBLE_CHEST ),
-                                                           () -> TERRIBLE_CHEST_PROTOCOL_VERSION,
-                                                           TERRIBLE_CHEST_PROTOCOL_VERSION::equals,
-                                                           TERRIBLE_CHEST_PROTOCOL_VERSION::equals );
+        return CHANNEL;
     }
 }

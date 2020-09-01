@@ -1,0 +1,19 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "EEE",
+    "ETE",
+    "EEE"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:emerald_block"
+    },
+    "T": {
+      "item": "terrible_chest:terrible_chest"
+    }
+  },
+  "result": {
+    "item": "terrible_chest:terrible_chest_2"
+  }
+}

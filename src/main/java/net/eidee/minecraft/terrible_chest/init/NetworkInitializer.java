@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,32 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.eidee.minecraft.terrible_chest.network.Networks;
-import net.eidee.minecraft.terrible_chest.network.message.gui.handler.MultiPageMessageHandler;
 import net.eidee.minecraft.terrible_chest.network.message.gui.ChangePage;
 import net.eidee.minecraft.terrible_chest.network.message.gui.UnlockMaxPage;
 
-public class MessageRegistry
+public class NetworkInitializer
 {
-    public static void register()
+    public static void registerMessage()
     {
-        int id = 0;
-        Networks.TERRIBLE_CHEST.registerMessage( id++, ChangePage.class,
-                                                 ChangePage::encode,
-                                                 ChangePage::decode,
-                                                 MultiPageMessageHandler::changePage );
-        Networks.TERRIBLE_CHEST.registerMessage( id++, UnlockMaxPage.class,
-                                                 UnlockMaxPage::encode,
-                                                 UnlockMaxPage::decode,
-                                                 MultiPageMessageHandler::unlockMaxPage );
+        AtomicInteger id = new AtomicInteger( 0 );
+
+        Networks.getChannel()
+                .registerMessage( id.getAndIncrement(),
+                                  ChangePage.class,
+                                  ChangePage::encode,
+                                  ChangePage::decode,
+                                  ChangePage::handle );
+
+        Networks.getChannel()
+                .registerMessage( id.getAndIncrement(),
+                                  UnlockMaxPage.class,
+                                  UnlockMaxPage::encode,
+                                  UnlockMaxPage::decode,
+                                  UnlockMaxPage::handle );
     }
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,29 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.capability.logic;
+package net.eidee.minecraft.terrible_chest.util;
 
 import java.util.Comparator;
 
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestItem;
+import net.eidee.minecraft.terrible_chest.item.ItemStackContainer;
 
 import net.minecraft.util.ResourceLocation;
 
 public class TerribleChestItemSorters
 {
-    public static final Comparator< TerribleChestItem > DEFAULT_1;
+    public static final Comparator< ItemStackContainer > DEFAULT_1;
 
-    public static final Comparator< TerribleChestItem > DEFAULT_2;
+    public static final Comparator< ItemStackContainer > DEFAULT_2;
 
-    public static final Comparator< TerribleChestItem > DEFAULT_3;
+    public static final Comparator< ItemStackContainer > DEFAULT_3;
 
-    public static final Comparator< TerribleChestItem > ITEM_REGISTRY_NAME;
+    public static final Comparator< ItemStackContainer > ITEM_REGISTRY_NAME;
 
-    public static final Comparator< TerribleChestItem > ITEM_COUNT;
+    public static final Comparator< ItemStackContainer > ITEM_COUNT;
 
-    public static final Comparator< TerribleChestItem > MOD_ID;
+    public static final Comparator< ItemStackContainer > MOD_ID;
 
-    public static final Comparator< TerribleChestItem > ITEM_NAME;
+    public static final Comparator< ItemStackContainer > ITEM_NAME;
 
     static
     {
@@ -61,7 +61,7 @@ public class TerribleChestItemSorters
             }
             return registryName1 == null ? 1 : -1;
         };
-        ITEM_COUNT = Comparator.comparingInt( TerribleChestItem::getCount );
+        ITEM_COUNT = Comparator.comparingLong( ItemStackContainer::getCount );
         MOD_ID = ( item1, item2 ) -> {
             ResourceLocation registryName1 = item1.getStack().getItem().getRegistryName();
             ResourceLocation registryName2 = item2.getStack().getItem().getRegistryName();
@@ -76,8 +76,8 @@ public class TerribleChestItemSorters
             return registryName1 == null ? 1 : -1;
         };
         ITEM_NAME = ( item1, item2 ) -> {
-            String name1 = item1.getStack().getTextComponent().getFormattedText();
-            String name2 = item2.getStack().getTextComponent().getFormattedText();
+            String name1 = item1.getStack().getTextComponent().getString();
+            String name2 = item2.getStack().getTextComponent().getString();
             return name1.compareTo( name2 );
         };
         DEFAULT_1 = ITEM_REGISTRY_NAME.thenComparing( MOD_ID ).thenComparing( ITEM_COUNT.reversed() );

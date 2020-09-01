@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,17 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
 
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.datafixers.types.Type;
 import mcp.MethodsReturnNonnullByDefault;
-import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.TerribleChestMod;
 import net.eidee.minecraft.terrible_chest.block.Blocks;
-import net.eidee.minecraft.terrible_chest.config.Config;
-import net.eidee.minecraft.terrible_chest.constants.Names;
-import net.eidee.minecraft.terrible_chest.tileentity.MultiPageTileEntity;
-import net.eidee.minecraft.terrible_chest.tileentity.SinglePageTileEntity;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
+import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity2;
 
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -48,16 +44,15 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class TileEntityTypeRegistry
+@Mod.EventBusSubscriber( modid = TerribleChestMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
+public class TileEntityTypeInitializer
 {
     private static < T extends TileEntity > void registerTileEntity( IForgeRegistry< TileEntityType< ? > > registry,
                                                                      String registryName,
                                                                      Supplier< T > factory,
-                                                                     @Nullable Type< T > dataFixerType,
                                                                      Block... blocks )
     {
-        TileEntityType< T > type = TileEntityType.Builder.create( factory, blocks ).build( dataFixerType );
+        TileEntityType< T > type = TileEntityType.Builder.create( factory, blocks ).build( null );
         type.setRegistryName( registryName );
         registry.register( type );
     }
@@ -65,10 +60,14 @@ public class TileEntityTypeRegistry
     @SubscribeEvent
     public static void register( RegistryEvent.Register< TileEntityType< ? > > event )
     {
-        Supplier< TerribleChestTileEntity > factory = () ->
-            Config.COMMON.useSinglePageMode.get() ? new SinglePageTileEntity()
-                                                  : new MultiPageTileEntity();
+        registerTileEntity( event.getRegistry(),
+                            RegistryNames.TERRIBLE_CHEST,
+                            TerribleChestTileEntity::new,
+                            Blocks.TERRIBLE_CHEST );
 
-        registerTileEntity( event.getRegistry(), Names.TERRIBLE_CHEST, factory, null, Blocks.TERRIBLE_CHEST );
+        registerTileEntity( event.getRegistry(),
+                            RegistryNames.TERRIBLE_CHEST_2,
+                            TerribleChestTileEntity2::new,
+                            Blocks.TERRIBLE_CHEST_2 );
     }
 }

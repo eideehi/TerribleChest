@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,18 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
 
-import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.TerribleChestMod;
 import net.eidee.minecraft.terrible_chest.block.Blocks;
 import net.eidee.minecraft.terrible_chest.block.TerribleChestBlock;
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.block.TerribleChestBlock2;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItem;
@@ -43,27 +46,36 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber( modid = TerribleChest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class BlockRegistry
+@Mod.EventBusSubscriber( modid = TerribleChestMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
+public class BlockInitializer
 {
     @SubscribeEvent
-    public static void register( RegistryEvent.Register< Block > event )
+    public static void registerBlock( RegistryEvent.Register< Block > event )
     {
         IForgeRegistry< Block > registry = event.getRegistry();
 
         Block block;
         Block.Properties prop;
         {
-            prop = Block.Properties.create( Material.IRON )
-                                   .hardnessAndResistance( 3.0F )
-                                   .doesNotBlockMovement();
-            block = new TerribleChestBlock( prop ).setRegistryName( Names.TERRIBLE_CHEST );
+            prop = Block.Properties.create( Material.IRON, MaterialColor.DIAMOND )
+                                   .hardnessAndResistance( 5.0F, 6.0F )
+                                   .sound( SoundType.METAL )
+                                   .notSolid();
+            block = new TerribleChestBlock( prop ).setRegistryName( RegistryNames.TERRIBLE_CHEST );
+            registry.register( block );
+        }
+        {
+            prop = Block.Properties.create( Material.IRON, MaterialColor.EMERALD )
+                                   .hardnessAndResistance( 5.0F, 6.0F )
+                                   .sound( SoundType.METAL )
+                                   .notSolid();
+            block = new TerribleChestBlock2( prop ).setRegistryName( RegistryNames.TERRIBLE_CHEST_2 );
             registry.register( block );
         }
     }
 
     @SubscribeEvent
-    public static void itemRegister( RegistryEvent.Register< Item > event )
+    public static void registerItem( RegistryEvent.Register< Item > event )
     {
         IForgeRegistry< Item > registry = event.getRegistry();
 
@@ -72,14 +84,21 @@ public class BlockRegistry
         {
             prop = new Item.Properties().group( ItemGroup.DECORATIONS );
 
-            item = new BlockItem( Blocks.TERRIBLE_CHEST, prop ).setRegistryName( Names.TERRIBLE_CHEST );
+            item = new BlockItem( Blocks.TERRIBLE_CHEST, prop ).setRegistryName( RegistryNames.TERRIBLE_CHEST );
+            registry.register( item );
+        }
+        {
+            prop = new Item.Properties().group( ItemGroup.DECORATIONS );
+
+            item = new BlockItem( Blocks.TERRIBLE_CHEST_2, prop ).setRegistryName( RegistryNames.TERRIBLE_CHEST_2 );
             registry.register( item );
         }
     }
 
     @OnlyIn( Dist.CLIENT )
-    public static void renderTypeRegister()
+    public static void registerRenderType()
     {
-        RenderTypeLookup.setRenderLayer( Blocks.TERRIBLE_CHEST, RenderType.func_228643_e_() );
+        RenderTypeLookup.setRenderLayer( Blocks.TERRIBLE_CHEST, RenderType.getCutout() );
+        RenderTypeLookup.setRenderLayer( Blocks.TERRIBLE_CHEST_2, RenderType.getCutout() );
     }
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,21 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.registry;
+package net.eidee.minecraft.terrible_chest.init;
 
-import net.eidee.minecraft.terrible_chest.config.Config;
-import net.eidee.minecraft.terrible_chest.gui.MultiPageScreen;
 import net.eidee.minecraft.terrible_chest.gui.TerribleChestScreen;
-import net.eidee.minecraft.terrible_chest.gui.SinglePageScreen;
 import net.eidee.minecraft.terrible_chest.inventory.container.ContainerTypes;
-import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
 
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn( Dist.CLIENT )
-public class ScreenRegistry
+public class ScreenInitializer
 {
-    public static void register()
+    public static void registerScreen()
     {
-        ScreenManager.IScreenFactory< TerribleChestContainer, TerribleChestScreen > factory;
-        factory = ( container, playerInventory, title ) -> {
-            return Config.COMMON.useSinglePageMode.get() ? new SinglePageScreen( container, playerInventory, title )
-                                                         : new MultiPageScreen( container, playerInventory, title );
-        };
-
-        ScreenManager.registerFactory( ContainerTypes.TERRIBLE_CHEST, factory );
+        ScreenManager.registerFactory( ContainerTypes.TERRIBLE_CHEST, TerribleChestScreen::createScreen );
+        ScreenManager.registerFactory( ContainerTypes.TERRIBLE_CHEST_2, TerribleChestScreen::createScreen );
     }
 }

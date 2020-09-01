@@ -24,18 +24,20 @@
 
 package net.eidee.minecraft.terrible_chest.block;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 
 import net.minecraft.block.Block;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class Blocks
 {
+    @ObjectHolder( RegistryNames.TERRIBLE_CHEST )
+    public static Block TERRIBLE_CHEST;
+
+    @ObjectHolder( RegistryNames.TERRIBLE_CHEST_2 )
+    public static Block TERRIBLE_CHEST_2;
+
     private Blocks()
     {
     }
-
-    @ObjectHolder( Names.TERRIBLE_CHEST )
-    public static Block TERRIBLE_CHEST;
-
 }

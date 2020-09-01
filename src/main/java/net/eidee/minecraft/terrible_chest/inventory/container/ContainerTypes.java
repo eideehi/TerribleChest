@@ -24,18 +24,20 @@
 
 package net.eidee.minecraft.terrible_chest.inventory.container;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
+import net.eidee.minecraft.terrible_chest.constants.RegistryNames;
 
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class ContainerTypes
 {
+    @ObjectHolder( RegistryNames.TERRIBLE_CHEST )
+    public static ContainerType< TerribleChestContainer > TERRIBLE_CHEST;
+
+    @ObjectHolder( RegistryNames.TERRIBLE_CHEST_2 )
+    public static ContainerType< TerribleChestContainer > TERRIBLE_CHEST_2;
+
     private ContainerTypes()
     {
     }
-
-    @ObjectHolder( Names.TERRIBLE_CHEST )
-    public static ContainerType< TerribleChestContainer > TERRIBLE_CHEST;
-
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,12 @@ package net.eidee.minecraft.terrible_chest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.eidee.minecraft.terrible_chest.config.Config;
-import net.eidee.minecraft.terrible_chest.config.KeyBindings;
-import net.eidee.minecraft.terrible_chest.network.Networks;
-import net.eidee.minecraft.terrible_chest.registry.BlockRegistry;
-import net.eidee.minecraft.terrible_chest.registry.CapabilityRegistry;
-import net.eidee.minecraft.terrible_chest.registry.MessageRegistry;
-import net.eidee.minecraft.terrible_chest.registry.ScreenRegistry;
+import net.eidee.minecraft.terrible_chest.init.BlockInitializer;
+import net.eidee.minecraft.terrible_chest.init.CapabilityInitializer;
+import net.eidee.minecraft.terrible_chest.init.NetworkInitializer;
+import net.eidee.minecraft.terrible_chest.init.ScreenInitializer;
+import net.eidee.minecraft.terrible_chest.settings.Config;
+import net.eidee.minecraft.terrible_chest.settings.KeyBindings;
 
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -42,8 +41,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod( TerribleChest.MOD_ID )
-public class TerribleChest
+@Mod( TerribleChestMod.MOD_ID )
+public class TerribleChestMod
 {
     private static final Logger logger;
 
@@ -54,7 +53,7 @@ public class TerribleChest
         logger = LogManager.getLogger( MOD_ID );
     }
 
-    public TerribleChest()
+    public TerribleChestMod()
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener( this::setup );
         FMLJavaModLoadingContext.get().getModEventBus().addListener( this::clientSetup );
@@ -68,15 +67,14 @@ public class TerribleChest
 
     private void setup( FMLCommonSetupEvent event )
     {
-        CapabilityRegistry.register();
-        Networks.init();
-        MessageRegistry.register();
+        CapabilityInitializer.registerCapability();
+        NetworkInitializer.registerMessage();
     }
 
     private void clientSetup( FMLClientSetupEvent event )
     {
-        ScreenRegistry.register();
+        ScreenInitializer.registerScreen();
         KeyBindings.getAll().forEach( ClientRegistry::registerKeyBinding );
-        BlockRegistry.renderTypeRegister();
+        BlockInitializer.registerRenderType();
     }
 }

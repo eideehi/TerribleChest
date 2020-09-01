@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.config;
+package net.eidee.minecraft.terrible_chest.settings;
 
 import java.util.ArrayList;
 import java.util.Collections;
