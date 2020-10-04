@@ -26,8 +26,7 @@ package net.eidee.minecraft.terrible_chest.registry;
 
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestInventoryCapability;
-import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,9 +40,9 @@ public class CapabilityRegistry
 {
     public static void register()
     {
-        CapabilityManager.INSTANCE.register( TerribleChestInventory.class,
-                                             new TerribleChestInventoryCapability.Storage(),
-                                             TerribleChestInventory::new );
+        CapabilityManager.INSTANCE.register( TerribleChestCapability.class,
+                                             new TerribleChestCapability.Storage(),
+                                             TerribleChestCapability::new );
     }
 
     @SubscribeEvent
@@ -52,8 +51,8 @@ public class CapabilityRegistry
         Entity entity = event.getObject();
         if ( entity instanceof EntityPlayer )
         {
-            event.addCapability( TerribleChestInventoryCapability.REGISTRY_KEY,
-                                 new TerribleChestInventoryCapability.Provider( Capabilities.TERRIBLE_CHEST ) );
+            event.addCapability( TerribleChestCapability.REGISTRY_KEY,
+                                 new TerribleChestCapability.Provider( Capabilities.TERRIBLE_CHEST ) );
         }
     }
 }

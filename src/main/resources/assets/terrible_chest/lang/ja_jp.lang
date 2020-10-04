@@ -7,3 +7,6 @@ terrible_chest.config.use_itemhandler_capability=ItemHandlerのケイパビリ�
 terrible_chest.config.stop_item_collection_and_deliver=アイテム収集と配送の停止
 terrible_chest.config.maxPageLimit=最大ページ数
 terrible_chest.config.slotStackLimit=スロットあたりの最大容量
+tile.terrible_chest.terrible_chest_2.name=エメラルドのテリブルチェスト
+terrible_chest.config.transferStackCount=一度に転送可能なスタックサイズ
+terrible_chest.config.transferCooldown=アイテム転送の間隔(tick)

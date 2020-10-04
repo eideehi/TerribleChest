@@ -27,6 +27,7 @@ package net.eidee.minecraft.terrible_chest.registry;
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.block.Blocks;
 import net.eidee.minecraft.terrible_chest.block.TerribleChestBlock;
+import net.eidee.minecraft.terrible_chest.block.TerribleChestBlock2;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 
 import net.minecraft.block.Block;
@@ -58,6 +59,12 @@ public class BlockRegistry
                                             .setCreativeTab( CreativeTabs.DECORATIONS );
             registry.register( block );
         }
+        {
+            block = new TerribleChestBlock2().setUnlocalizedName( Names.TERRIBLE_CHEST_2.replace( ':', '.' ) )
+                                             .setRegistryName( Names.TERRIBLE_CHEST_2 )
+                                             .setCreativeTab( CreativeTabs.DECORATIONS );
+            registry.register( block );
+        }
     }
 
     @SubscribeEvent
@@ -70,14 +77,26 @@ public class BlockRegistry
             item = new ItemBlock( Blocks.TERRIBLE_CHEST ).setRegistryName( Names.TERRIBLE_CHEST );
             registry.register( item );
         }
+        {
+            item = new ItemBlock( Blocks.TERRIBLE_CHEST_2 ).setRegistryName( Names.TERRIBLE_CHEST_2 );
+            registry.register( item );
+        }
     }
 
     @SubscribeEvent
     @SideOnly( Side.CLIENT )
     public static void modelRegister( ModelRegistryEvent event )
     {
-        Item item = Item.getItemFromBlock( Blocks.TERRIBLE_CHEST );
-        ModelResourceLocation key = new ModelResourceLocation( Names.TERRIBLE_CHEST, "inventory" );
-        ModelLoader.setCustomModelResourceLocation( item, 0, key );
+        Item item;
+        {
+            item = Item.getItemFromBlock( Blocks.TERRIBLE_CHEST );
+            ModelResourceLocation key = new ModelResourceLocation( Names.TERRIBLE_CHEST, "inventory" );
+            ModelLoader.setCustomModelResourceLocation( item, 0, key );
+        }
+        {
+            item = Item.getItemFromBlock( Blocks.TERRIBLE_CHEST_2 );
+            ModelResourceLocation key = new ModelResourceLocation( Names.TERRIBLE_CHEST_2, "inventory" );
+            ModelLoader.setCustomModelResourceLocation( item, 0, key );
+        }
     }
 }

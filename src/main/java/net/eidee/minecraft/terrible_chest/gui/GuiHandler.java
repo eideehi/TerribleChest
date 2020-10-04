@@ -27,7 +27,7 @@ package net.eidee.minecraft.terrible_chest.gui;
 import javax.annotation.Nullable;
 
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
-import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
+import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntityBase;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -39,18 +39,18 @@ public class GuiHandler
     implements IGuiHandler
 {
     public static final int GUI_TERRIBLE_CHEST = 0;
+    public static final int GUI_TERRIBLE_CHEST_2 = 1;
 
     @Nullable
     @Override
     public Object getServerGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
     {
-        if ( ID == GUI_TERRIBLE_CHEST )
+        if ( ID == GUI_TERRIBLE_CHEST || ID == GUI_TERRIBLE_CHEST_2 )
         {
             TileEntity tileEntity = world.getTileEntity( new BlockPos( x, y, z ) );
-            if ( tileEntity instanceof TerribleChestTileEntity )
+            if ( tileEntity instanceof TerribleChestTileEntityBase )
             {
-                TerribleChestTileEntity terribleChestTileEntity = ( TerribleChestTileEntity )tileEntity;
-                return terribleChestTileEntity.createContainer( player.inventory );
+                return ( ( TerribleChestTileEntityBase )tileEntity ).createContainer( player.inventory );
             }
         }
         return null;
@@ -60,13 +60,12 @@ public class GuiHandler
     @Override
     public Object getClientGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
     {
-        if ( ID == GUI_TERRIBLE_CHEST )
+        if ( ID == GUI_TERRIBLE_CHEST || ID == GUI_TERRIBLE_CHEST_2 )
         {
             TileEntity tileEntity = world.getTileEntity( new BlockPos( x, y, z ) );
-            if ( tileEntity instanceof TerribleChestTileEntity )
+            if ( tileEntity instanceof TerribleChestTileEntityBase )
             {
-                TerribleChestContainer container = new TerribleChestContainer( player.inventory );
-                return new TerribleChestScreen( container, player.inventory );
+                return new TerribleChestScreen( new TerribleChestContainer( player.inventory ) );
             }
         }
         return null;

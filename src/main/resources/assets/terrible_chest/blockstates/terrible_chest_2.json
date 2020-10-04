@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "normal": [
+            { "model": "terrible_chest:terrible_chest_2" },
+            { "model": "terrible_chest:terrible_chest_2", "y": 90 },
+            { "model": "terrible_chest:terrible_chest_2", "y": 180 },
+            { "model": "terrible_chest:terrible_chest_2", "y": 270 }
+        ]
+    }
+}

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,13 @@ package net.eidee.minecraft.terrible_chest.capability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.eidee.minecraft.terrible_chest.constants.Names;
-import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import mcp.MethodsReturnNonnullByDefault;
+import net.eidee.minecraft.terrible_chest.TerribleChest;
+import net.eidee.minecraft.terrible_chest.item.ItemStackContainer;
+import net.eidee.minecraft.terrible_chest.util.ItemStackContainerUtil;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,26 +40,76 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public class TerribleChestInventoryCapability
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public class TerribleChestCapability
+    implements INBTSerializable< NBTTagCompound >
 {
-    public static final ResourceLocation REGISTRY_KEY = new ResourceLocation( Names.TERRIBLE_CHEST );
+    public static final ResourceLocation REGISTRY_KEY;
+
+    static
+    {
+        REGISTRY_KEY = new ResourceLocation( TerribleChest.MOD_ID, "terrible_chest" );
+    }
+
+    private Int2ObjectMap< ItemStackContainer > containers;
+    private int maxPage;
+
+    public TerribleChestCapability()
+    {
+        this.containers = ItemStackContainerUtil.newContainers();
+        this.maxPage = 1;
+    }
+
+    public Int2ObjectMap< ItemStackContainer > getContainers()
+    {
+        return containers;
+    }
+
+    public int getMaxPage()
+    {
+        return maxPage;
+    }
+
+    public void setMaxPage( int maxPage )
+    {
+        this.maxPage = maxPage;
+    }
+
+    @Override
+    public NBTTagCompound serializeNBT()
+    {
+        NBTTagCompound nbt = new NBTTagCompound();
+        ItemStackContainerUtil.saveAllItems( nbt, containers );
+        nbt.setInteger( "MaxPage", maxPage );
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT( NBTTagCompound nbt )
+    {
+        containers.clear();
+        ItemStackContainerUtil.loadAllItems( nbt, containers );
+        maxPage = nbt.getInteger( "MaxPage" );
+    }
 
     public static class Storage
-        implements Capability.IStorage< TerribleChestInventory >
+        implements Capability.IStorage< TerribleChestCapability >
     {
         @Nullable
         @Override
-        public NBTBase writeNBT( Capability< TerribleChestInventory > capability,
-                                 TerribleChestInventory instance,
+        public NBTBase writeNBT( Capability< TerribleChestCapability > capability,
+                                 TerribleChestCapability instance,
                                  EnumFacing side )
         {
             return instance.serializeNBT();
         }
 
         @Override
-        public void readNBT( Capability< TerribleChestInventory > capability,
-                             TerribleChestInventory instance,
+        public void readNBT( Capability< TerribleChestCapability > capability,
+                             TerribleChestCapability instance,
                              EnumFacing side,
                              NBTBase nbt )
         {
@@ -70,10 +124,10 @@ public class TerribleChestInventoryCapability
     public static class Provider
         implements ICapabilitySerializable< NBTTagCompound >
     {
-        private final Capability< TerribleChestInventory > _cap;
-        private TerribleChestInventory instance;
+        private final Capability< TerribleChestCapability > _cap;
+        private TerribleChestCapability instance;
 
-        public Provider( Capability< TerribleChestInventory > _cap )
+        public Provider( Capability< TerribleChestCapability > _cap )
         {
             this._cap = _cap;
             this.instance = this._cap.getDefaultInstance();

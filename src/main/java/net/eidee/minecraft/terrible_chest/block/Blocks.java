@@ -38,4 +38,6 @@ public class Blocks
     @GameRegistry.ObjectHolder( Names.TERRIBLE_CHEST )
     public static Block TERRIBLE_CHEST;
 
+    @GameRegistry.ObjectHolder( Names.TERRIBLE_CHEST_2 )
+    public static Block TERRIBLE_CHEST_2;
 }

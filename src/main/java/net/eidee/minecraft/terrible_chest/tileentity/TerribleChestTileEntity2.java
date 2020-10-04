@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,18 @@
 package net.eidee.minecraft.terrible_chest.tileentity;
 
 import java.util.Objects;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import mcp.MethodsReturnNonnullByDefault;
-import net.eidee.minecraft.terrible_chest.capability.Capabilities;
-import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
 import net.eidee.minecraft.terrible_chest.config.Config;
 import net.eidee.minecraft.terrible_chest.inventory.ExtraInventoryData;
 import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
 import net.eidee.minecraft.terrible_chest.inventory.container.TerribleChestContainer;
+import net.eidee.minecraft.terrible_chest.item.ItemStackContainer;
 import net.eidee.minecraft.terrible_chest.item.TerribleChestItemHandler;
+import net.eidee.minecraft.terrible_chest.util.ItemStackContainerUtil;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,7 +49,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class TerribleChestTileEntity
+public class TerribleChestTileEntity2
     extends TileEntity
     implements TerribleChestTileEntityBase
 {
@@ -70,7 +70,7 @@ public class TerribleChestTileEntity
             }
             else if ( index == TerribleChestContainer.DATA_MAX_PAGE )
             {
-                return tmpCapability != null ? tmpCapability.getMaxPage() : 0;
+                return maxPage;
             }
             return 0;
         }
@@ -84,43 +84,37 @@ public class TerribleChestTileEntity
             }
             else if ( index == TerribleChestContainer.DATA_MAX_PAGE )
             {
-                if ( tmpCapability != null )
-                {
-                    tmpCapability.setMaxPage( value );
-                }
+                maxPage = value;
             }
         }
     };
 
-    private UUID ownerId;
+    private Int2ObjectMap< ItemStackContainer > containers;
+    private int maxPage;
     private int page;
     private long lastTransferTime;
 
-    private TerribleChestCapability tmpCapability;
-
-    @Nullable
-    private TerribleChestCapability getTerribleChestCapability()
+    public TerribleChestTileEntity2()
     {
-        if ( ownerId != null )
-        {
-            Objects.requireNonNull( getWorld() );
-            EntityPlayer player = getWorld().getPlayerEntityByUUID( ownerId );
-            if ( player != null )
-            {
-                return player.getCapability( Capabilities.TERRIBLE_CHEST, null );
-            }
-        }
-        return null;
+        this.containers = ItemStackContainerUtil.newContainers();
+        this.maxPage = 1;
+        this.page = 0;
+        this.lastTransferTime = 0;
     }
 
-    public void setOwnerId( UUID ownerId )
+    public void readTerribleChestData( NBTTagCompound compound )
     {
-        this.ownerId = ownerId;
+        ItemStackContainerUtil.loadAllItems( compound, containers );
+        maxPage = compound.getInteger( "MaxPage" );
+        page = compound.getInteger( "Page" );
     }
 
-    public boolean isOwner( EntityPlayer player )
+    public NBTTagCompound writeTerribleChestData( NBTTagCompound compound )
     {
-        return Objects.equals( ownerId, player.getUniqueID() );
+        ItemStackContainerUtil.saveAllItems( compound, containers );
+        compound.setInteger( "MaxPage", maxPage );
+        compound.setInteger( "Page", page );
+        return compound;
     }
 
     @Override
@@ -133,62 +127,39 @@ public class TerribleChestTileEntity
     @Override
     public TerribleChestItemHandler getTerribleChestItemHandler()
     {
-        TerribleChestCapability capability = getTerribleChestCapability();
-        if ( capability != null )
-        {
-            return TerribleChestItemHandler.create( capability.getContainers(), () -> page * 27, () -> 27 );
-        }
-        return null;
+        return TerribleChestItemHandler.create( containers, () -> page * 27, () -> 27 );
     }
 
     @Nullable
     @Override
     public TerribleChestInventory getTerribleChestInventory()
     {
-        TerribleChestCapability capability = getTerribleChestCapability();
-        if ( capability != null )
+        TerribleChestItemHandler handler = Objects.requireNonNull( getTerribleChestItemHandler() );
+        return new TerribleChestInventory()
         {
-            TerribleChestTileEntity self = this;
-            TerribleChestItemHandler handler = Objects.requireNonNull( getTerribleChestItemHandler() );
-            return new TerribleChestInventory()
+            @Override
+            public TerribleChestItemHandler getItemHandler()
             {
-                @Override
-                public TerribleChestItemHandler getItemHandler()
-                {
-                    return handler;
-                }
+                return handler;
+            }
 
-                @Override
-                public void markDirty()
-                {
-                }
+            @Override
+            public void markDirty()
+            {
+            }
 
-                @Override
-                public boolean isUsableByPlayer( EntityPlayer player )
+            @Override
+            public boolean isUsableByPlayer( EntityPlayer player )
+            {
+                World world = Objects.requireNonNull( getWorld() );
+                BlockPos pos = getPos();
+                if ( world.getTileEntity( pos ) != getTileEntity() )
                 {
-                    World world = Objects.requireNonNull( getWorld() );
-                    BlockPos pos = getPos();
-                    if ( world.getTileEntity( pos ) != self || !Objects.equals( player.getUniqueID(), ownerId ) )
-                    {
-                        return false;
-                    }
-                    return player.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5 ) <= 64.0;
+                    return false;
                 }
-
-                @Override
-                public void openInventory( EntityPlayer player )
-                {
-                    self.tmpCapability = capability;
-                }
-
-                @Override
-                public void closeInventory( EntityPlayer player )
-                {
-                    self.tmpCapability = null;
-                }
-            };
-        }
-        return null;
+                return player.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5 ) <= 64.0;
+            }
+        };
     }
 
     @Override
@@ -213,20 +184,14 @@ public class TerribleChestTileEntity
     public void readFromNBT( NBTTagCompound compound )
     {
         super.readFromNBT( compound );
-        ownerId = compound.getUniqueId( "OwnerId" );
-        page = compound.getInteger( "Page" );
+        readTerribleChestData( compound );
     }
 
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound compound )
     {
         super.writeToNBT( compound );
-        if ( ownerId != null )
-        {
-            compound.setUniqueId( "OwnerId", ownerId );
-        }
-        compound.setInteger( "Page", page );
-        return compound;
+        return writeTerribleChestData( compound );
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 EideeHi
+ * Copyright (c) 2020 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,45 @@
  * SOFTWARE.
  */
 
-package net.eidee.minecraft.terrible_chest.constants;
+package net.eidee.minecraft.terrible_chest.inventory;
 
-import static net.eidee.minecraft.terrible_chest.TerribleChest.MOD_ID;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Names
+import mcp.MethodsReturnNonnullByDefault;
+
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public interface ExtraInventoryData
 {
-    private Names()
+    static ExtraInventoryData dummy( int size )
     {
+        return new ExtraInventoryData()
+        {
+            int[] data = new int[ size ];
+
+            @Override
+            public int getSize()
+            {
+                return size;
+            }
+
+            @Override
+            public int get( int index )
+            {
+                return data[ index ];
+            }
+
+            @Override
+            public void set( int index, int value )
+            {
+                data[ index ] = value;
+            }
+        };
     }
 
-    public static final String TERRIBLE_CHEST = ( MOD_ID + ":terrible_chest" );
+    int getSize();
 
-    public static final String TERRIBLE_CHEST_2 = ( MOD_ID + ":terrible_chest_2" );
+    int get( int index );
 
-    public static final String DIAMOND_SPHERE = ( MOD_ID + ":diamond_sphere" );
+    void set( int index, int value );
 }

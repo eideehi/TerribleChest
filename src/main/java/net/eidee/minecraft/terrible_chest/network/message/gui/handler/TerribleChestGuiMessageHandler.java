@@ -44,7 +44,7 @@ public class TerribleChestGuiMessageHandler
             EntityPlayerMP player = ctx.getServerHandler().player;
             if ( player != null && player.openContainer instanceof TerribleChestContainer )
             {
-                ( ( TerribleChestContainer )player.openContainer ).setPage( message.getPage() );
+                ( ( TerribleChestContainer )player.openContainer ).changePage( message.getPage() );
             }
             return null;
         }

@@ -35,6 +35,7 @@ import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -57,7 +58,7 @@ public class TerribleChestBlock
 {
     public TerribleChestBlock()
     {
-        super( Material.IRON );
+        super( Material.IRON, MapColor.DIAMOND );
         setHardness( 3.0F );
         setResistance( 10.0F );
         setSoundType( SoundType.METAL );

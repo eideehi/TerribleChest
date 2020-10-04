@@ -31,6 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import mcp.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.terrible_chest.constants.Names;
 import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity;
+import net.eidee.minecraft.terrible_chest.tileentity.TerribleChestTileEntity2;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -41,14 +42,17 @@ public class TileEntityRegistry
 {
 
     private static final ResourceLocation KEY_TERRIBLE_CHEST;
+    private static final ResourceLocation KEY_TERRIBLE_CHEST_2;
 
     static
     {
         KEY_TERRIBLE_CHEST = new ResourceLocation( MOD_ID, Names.TERRIBLE_CHEST );
+        KEY_TERRIBLE_CHEST_2 = new ResourceLocation( MOD_ID, Names.TERRIBLE_CHEST_2 );
     }
 
     public static void register()
     {
         GameRegistry.registerTileEntity( TerribleChestTileEntity.class, KEY_TERRIBLE_CHEST );
+        GameRegistry.registerTileEntity( TerribleChestTileEntity2.class, KEY_TERRIBLE_CHEST_2 );
     }
 }

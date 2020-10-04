@@ -47,6 +47,16 @@ public class Config
     @net.minecraftforge.common.config.Config.RangeInt
     public static int slotStackLimit = -1;
 
+    @net.minecraftforge.common.config.Config.Comment( "Item transfer interval (tick)" )
+    @net.minecraftforge.common.config.Config.LangKey( "terrible_chest.config.transferCooldown" )
+    @net.minecraftforge.common.config.Config.RangeInt( min = 1, max = 20 )
+    public static int transferCooldown = 1;
+
+    @net.minecraftforge.common.config.Config.Comment( "Stack size that can be transferred at a time" )
+    @net.minecraftforge.common.config.Config.LangKey( "terrible_chest.config.transferStackCount" )
+    @net.minecraftforge.common.config.Config.RangeInt( min = 1, max = 64 )
+    public static int transferStackCount = 1;
+
     private Config()
     {
     }

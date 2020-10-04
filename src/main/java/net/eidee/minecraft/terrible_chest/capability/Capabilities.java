@@ -24,8 +24,6 @@
 
 package net.eidee.minecraft.terrible_chest.capability;
 
-import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
-
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
@@ -35,6 +33,6 @@ public class Capabilities
     {
     }
 
-    @CapabilityInject( TerribleChestInventory.class )
-    public static Capability< TerribleChestInventory > TERRIBLE_CHEST;
+    @CapabilityInject( TerribleChestCapability.class )
+    public static Capability< TerribleChestCapability > TERRIBLE_CHEST;
 }

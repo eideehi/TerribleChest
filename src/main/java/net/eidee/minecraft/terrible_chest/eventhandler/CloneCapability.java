@@ -26,7 +26,7 @@ package net.eidee.minecraft.terrible_chest.eventhandler;
 
 import net.eidee.minecraft.terrible_chest.TerribleChest;
 import net.eidee.minecraft.terrible_chest.capability.Capabilities;
-import net.eidee.minecraft.terrible_chest.inventory.TerribleChestInventory;
+import net.eidee.minecraft.terrible_chest.capability.TerribleChestCapability;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -40,14 +40,14 @@ public class CloneCapability
     public static void cloneCapability( PlayerEvent.Clone event )
     {
         EntityPlayer original = event.getOriginal();
-        TerribleChestInventory capability = original.getCapability( Capabilities.TERRIBLE_CHEST, null );
-        if ( capability != null )
+        TerribleChestCapability originalCapability = original.getCapability( Capabilities.TERRIBLE_CHEST, null );
+        if ( originalCapability != null )
         {
             EntityPlayer clone = event.getEntityPlayer();
-            TerribleChestInventory cloneCapability = clone.getCapability( Capabilities.TERRIBLE_CHEST, null );
+            TerribleChestCapability cloneCapability = clone.getCapability( Capabilities.TERRIBLE_CHEST, null );
             if ( cloneCapability != null )
             {
-                cloneCapability.deserializeNBT( capability.serializeNBT() );
+                cloneCapability.deserializeNBT( originalCapability.serializeNBT() );
             }
         }
     }

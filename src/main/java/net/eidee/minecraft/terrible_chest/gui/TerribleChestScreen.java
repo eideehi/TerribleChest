@@ -42,9 +42,7 @@ import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -63,15 +61,12 @@ public class TerribleChestScreen
         GUI_TEXTURE = new ResourceLocation( MOD_ID, "textures/gui/container/terrible_chest.png" );
     }
 
-    private IInventory inventory;
-    private InventoryPlayer playerInventory;
+    private TerribleChestContainer container;
 
-    public TerribleChestScreen( TerribleChestContainer screenContainer,
-                                InventoryPlayer playerInventory )
+    public TerribleChestScreen( TerribleChestContainer screenContainer )
     {
         super( screenContainer );
-        this.inventory = screenContainer.getChestInventory();
-        this.playerInventory = playerInventory;
+        this.container = screenContainer;
         xSize = 209;
         ySize = 182;
     }
@@ -79,20 +74,19 @@ public class TerribleChestScreen
     @Override
     protected void actionPerformed( GuiButton button )
     {
-        int page;
+        container.resetSwapIndex();
+
         switch ( button.id )
         {
             default:
                 break;
 
             case 0:
-                page = inventory.getField( TerribleChestTileEntity.DATA_PAGE );
-                Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( page - 1 ) );
+                Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( container.getCurrentPage() - 1 ) );
                 break;
 
             case 1:
-                page = inventory.getField( TerribleChestTileEntity.DATA_PAGE );
-                Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( page + 1 ) );
+                Networks.TERRIBLE_CHEST.sendToServer( new ChangePage( container.getCurrentPage() + 1 ) );
                 break;
 
             case 2:
@@ -119,12 +113,12 @@ public class TerribleChestScreen
             {
                 if ( isAltKeyDown() )
                 {
-                    super.handleMouseClick( slotIn, slotId, 2, type );
+                    super.handleMouseClick( slotIn, slotId, TerribleChestContainer.TYPE_SWAP, type );
                     return;
                 }
                 else if ( isCtrlKeyDown() )
                 {
-                    super.handleMouseClick( slotIn, slotId, 3, type );
+                    super.handleMouseClick( slotIn, slotId, TerribleChestContainer.TYPE_ONE_BY_ONE, type );
                     return;
                 }
             }
@@ -132,7 +126,7 @@ public class TerribleChestScreen
             {
                 if ( isCtrlKeyDown() )
                 {
-                    super.handleMouseClick( slotIn, slotId, 3, type );
+                    super.handleMouseClick( slotIn, slotId, TerribleChestContainer.TYPE_ONE_BY_ONE, type );
                     return;
                 }
             }
@@ -143,7 +137,7 @@ public class TerribleChestScreen
             {
                 if ( isCtrlKeyDown() )
                 {
-                    super.handleMouseClick( slotIn, slotId, 2, type );
+                    super.handleMouseClick( slotIn, slotId, TerribleChestContainer.TYPE_MOVE_THE_SAME, type );
                     return;
                 }
             }
@@ -162,12 +156,15 @@ public class TerribleChestScreen
     @Override
     protected void drawGuiContainerForegroundLayer( int mouseX, int mouseY )
     {
-        fontRenderer.drawString( "", 8, 22, 4210752 );
-        fontRenderer.drawString( playerInventory.getDisplayName().getFormattedText(), 8, ySize - 93, 4210752 );
+        String chestName = container.getChestInventory().getDisplayName().getFormattedText();
+        String playerInventoryName = container.getPlayerInventory().getDisplayName().getFormattedText();
 
-        String page = ( inventory.getField( TerribleChestTileEntity.DATA_PAGE ) + 1 ) + " / ";
+        fontRenderer.drawString( chestName, 8, 22, 4210752 );
+        fontRenderer.drawString( playerInventoryName, 8, ySize - 93, 4210752 );
+
+        String page = ( container.getCurrentPage() + 1 ) + " / ";
         int pageWidth = fontRenderer.getStringWidth( page );
-        String maxPage = Integer.toString( inventory.getField( TerribleChestTileEntity.DATA_MAX_PAGE ) );
+        String maxPage = Integer.toString( container.getMaxPage() );
         int maxPageWidth = fontRenderer.getStringWidth( maxPage );
         fontRenderer.drawString( page, 166 - maxPageWidth - pageWidth, 22, 4210752 );
         fontRenderer.drawString( maxPage, 166 - maxPageWidth, 22, 4210752 );
@@ -180,30 +177,20 @@ public class TerribleChestScreen
         mc.getTextureManager().bindTexture( GUI_TEXTURE );
         drawTexturedModalRect( guiLeft, guiTop, 0, 0, xSize, ySize );
 
-        int swapTarget = inventory.getField( TerribleChestTileEntity.DATA_SWAP_TARGET );
-        if ( swapTarget != -1 )
+        int swapTarget = container.getSwapIndex();
+        if ( swapTarget >= 0 && swapTarget < 27 )
         {
-            int slotId = swapTarget - ( inventory.getField( TerribleChestTileEntity.DATA_PAGE ) * 27 );
-            if ( slotId >= 0 && slotId < 27 )
-            {
-                Slot slot = inventorySlots.getSlot( slotId );
-                GlStateManager.disableLighting();
-                GlStateManager.disableDepth();
-                int x = guiLeft + slot.xPos;
-                int y = guiTop + slot.yPos;
-                GlStateManager.colorMask( true, true, true, false );
-                drawGradientRect( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
-                GlStateManager.colorMask( true, true, true, true );
-                GlStateManager.enableLighting();
-                GlStateManager.enableDepth();
-            }
+            Slot slot = inventorySlots.getSlot( swapTarget );
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepth();
+            int x = guiLeft + slot.xPos;
+            int y = guiTop + slot.yPos;
+            GlStateManager.colorMask( true, true, true, false );
+            drawGradientRect( x, y, x + 16, y + 16, 0x80FF0000, 0x80FF0000 );
+            GlStateManager.colorMask( true, true, true, true );
+            GlStateManager.enableLighting();
+            GlStateManager.enableDepth();
         }
-    }
-
-    @Override
-    protected void renderHoveredToolTip( int p_191948_1_, int p_191948_2_ )
-    {
-        super.renderHoveredToolTip( p_191948_1_, p_191948_2_ );
     }
 
     @Override
@@ -214,7 +201,7 @@ public class TerribleChestScreen
         {
             if ( slot.slotNumber >= 0 && slot.slotNumber < 27 )
             {
-                long count = inventory.getField( slot.getSlotIndex() ) & 0xFFFFFFFFL;
+                long count = container.getItemCount( slot.getSlotIndex() );
                 textLines.add( 1, I18n.format( "gui." + MOD_ID + ".terrible_chest.count", count ) );
             }
         }
