@@ -1,6 +1,6 @@
 <img src="https://app.box.com/shared/static/cbpgau8w2td9jwmkjvxpzllwhj19mxqw.png" width="200" alt="Logo - Terrible Chest" />
 
-# Terrible Chest - 1.16.2 #
+# Terrible Chest - 1.16.3 #
 Add a chest with extreme(terrible) spec.
 
 ## Outline ##
